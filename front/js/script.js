@@ -16,7 +16,7 @@ fetch("http://localhost:3000/api/products/")
     let produit = document.getElementById("items");
     for (let i in produits) {
       let lienCanape = document.createElement("a");
-      lienCanape.setAttribute("href", produits[i]._id);
+      lienCanape.setAttribute("href", `./product.html?id=` + produits[i]._id);
 
       let canape = document.createElement("article");
 
