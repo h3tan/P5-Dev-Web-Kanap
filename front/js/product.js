@@ -1,26 +1,20 @@
 let url = new URL(document.location);
+let blocPanier = document.getElementById("cart__items");
 let menuCouleurs = document.getElementById("colors");
 let menuQuantite = document.getElementById("quantity");
 let bouton = document.getElementById("addToCart");
-let getColors = "";
-let getQuantity = "";
-let CartProduct = [];
-let Cart = [];
 
 /**
- * Retourne le nombre d'éléments de localStorage
- * @returns {Number}
+ * Ajoute les balises <option> avec les valeurs passées en paramètres
+ * @param {Array} options
  */
-function numberLocalStorage() {
-  return localStorage.length;
-}
-
-/**
- * Permet d'obtenir le panier sous forme de String
- * @returns {String}
- */
-function getCart() {
-  return localStorage.getItem("cart");
+function setOptions(id, options) {
+  for (let i in options) {
+    let optionTag = document.createElement("option");
+    optionTag.setAttribute("value", options[i]);
+    optionTag.innerHTML = options[i];
+    document.getElementById(id).appendChild(optionTag);
+  }
 }
 
 /**
@@ -41,8 +35,6 @@ function verifyProduct(id, quantity, colors) {
   }
 }
 
-let blocPanier = document.getElementById("cart__items");
-
 /**
  * Convertit le panier qui est sous forme de String en un tableau
  * à deux dimensions contenant des tableaux à trois éléments
@@ -62,39 +54,75 @@ function panierStringToPanier(cart) {
 }
 
 /**
- * Ajoute le produit dans un tableau en vue de son ajout dans le panier
+ * Cherche si le produit est déjà dans le panier (couple id et couleurs identiques)
+ * Si déjà présent, met à jour la quantité du produit déjà dans le panier avec la valeur du produit ajouté
  * @param {Array} cart
- * @param {Array} productToAdd
- * @returns {Array}
+ * @param {Array} product
+ * @returns
  */
-function addProduct(cart, productToAdd) {
+function searchProduct(cart, product) {
   for (i in cart) {
-    if (productToAdd[0] == cart[i][0] && productToAdd[2] == cart[i][2]) {
-      cart[i][1] = cart[i][1] + Number(productToAdd[1]);
-      alert("Quantité mise à jour!");
-      return cart;
+    if (cart[i][0] == product[0] && cart[i][2] == product[2]) {
+      cart[i][1] += Number(product[1]);
+      return true;
     }
   }
-  cart.push(productToAdd);
-  alert("Produit ajouté au panier!");
-  return cart;
+  return false;
+}
+
+/**
+ * Met à jour le panier en fonction de l'ajout (mise à jour de la quantité ou ajout dans le panier)
+ * @param {Array} cart
+ * @param {Array} product
+ */
+function updateStorage(cart, product) {
+  if (localStorage.length == 0) {
+    localStorage.setItem("cart", product);
+    alert("Produit ajouté au panier!");
+  } else {
+    cart = panierStringToPanier(localStorage.getItem("cart"));
+    if (searchProduct(cart, product)) {
+      localStorage.setItem("cart", cart);
+      alert("Quantité mise à jour!");
+    } else {
+      cart.push(product);
+      localStorage.setItem("cart", cart);
+      alert("Produit ajouté au panier!");
+    }
+  }
+}
+
+/**
+ * Ajoute le produit dans le panier
+ * @param {String} id
+ * @param {Number} quantity
+ * @param {String} colors
+ * @returns {Boolean}
+ */
+function addToCart(id, quantity, colors) {
+  let currentCart = [];
+  let product = verifyProduct(id, quantity, colors);
+  if (product == 0) {
+    alert("Veuillez choisir une quantité et une couleur");
+    return false;
+  } else {
+    updateStorage(currentCart, product);
+    return true;
+  }
 }
 
 /** Récupère l'id dans l'URL de la page */
 if (url.searchParams.has("id")) {
+  let getColors = "";
+  let getQuantity = "";
   let id = url.searchParams.get("id");
   fetch("http://localhost:3000/api/products/" + id)
-    .then(function (res) {
-      if (res.ok) {
-        return res.json();
-      }
-    })
+    .then((res) => res.json())
     /**
      * Affiche les détails du produit dans la page
      * La boucle for ajoute les options de couleurs du produit dans le <select>
      */
-    .then(function (produit) {
-      console.log("http://localhost:3000/api/products/" + id);
+    .then((produit) => {
       let imageProduit = document.createElement("img");
       imageProduit.setAttribute("src", produit.imageUrl);
       imageProduit.setAttribute("alt", produit.altTxt);
@@ -104,12 +132,7 @@ if (url.searchParams.has("id")) {
       document.getElementById("price").textContent = produit.price;
       document.getElementById("description").textContent = produit.description;
 
-      for (let i in produit.colors) {
-        let option = document.createElement("option");
-        option.setAttribute("value", produit.colors[i]);
-        option.innerHTML = produit.colors[i];
-        document.getElementById("colors").appendChild(option);
-      }
+      setOptions("colors", produit.colors);
 
       menuCouleurs.addEventListener("change", function () {
         getColors = menuCouleurs.value;
@@ -119,23 +142,11 @@ if (url.searchParams.has("id")) {
       });
 
       /**
-       * Gère les différents évènements au moment de l'ajout du produit dans le panier
+       * Ajoute le produit au panier au moment du clic sur le bouton
        */
       bouton.addEventListener("click", function () {
-        CartProduct = verifyProduct(id, getQuantity, getColors);
-        console.log("Article souhaité: " + CartProduct);
-        if (CartProduct == 0) {
-          alert("Veuillez indiquer une quantité et une couleur");
-        } else {
-          if (numberLocalStorage() == 0) {
-            localStorage.setItem("cart", CartProduct);
-          } else {
-            Cart = localStorage.getItem("cart");
-            Cart = panierStringToPanier(Cart);
-            localStorage.setItem("cart", addProduct(Cart, CartProduct));
-          }
-        }
+        addToCart(id, getQuantity, getColors);
       });
     })
-    .catch(function (err) {});
+    .catch((err) => {});
 }
