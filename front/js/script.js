@@ -18,36 +18,42 @@ function newElement(element, attribut, attributName) {
   }
 }
 
-/**
- *  Ajoute <element> comme enfant de <parent> à la fin de ses autres enfants
- * @param {HTMLElement} parent
- * @param {HTMLElement} element
- * @returns {NHTMLElement}
- */
-function append(parent, element) {
-  return parent.appendChild(element);
-}
-
-/**
- *  Crée un nouvel attribut contentName pour <element> ayant pour valeur contentText
- * @param {HTMLElement} element
- * @param {String} contentName
- * @param {String} contentText
- */
-function newAttribute(element, contentName, contentText) {
-  element.setAttribute(contentName, contentText);
-}
-
-/**
- *  Ajoute text comme contenu de <element>
- * @param {HTMLElement} element
- * @param {String} text
- */
-function setText(element, text) {
-  element.textContent = text;
-}
-
 let blocArticles = document.getElementById("items");
+
+/**
+ * Affiche les produits dans la page
+ * @param {Array} produits
+ */
+function displayProduits(produits) {
+  for (let i in produits) {
+    let lienCanape = newElement(
+      "a",
+      ["href"],
+      [`./product.html?id=` + produits[i]._id]
+    );
+
+    let canape = newElement("article");
+
+    let imageProduit = newElement(
+      "img",
+      ["src", "alt"],
+      [produits[i].imageUrl, produits[i].altTxt]
+    );
+
+    let nomProduit = newElement("h3", ["class"], ["productName"]);
+
+    let descriptionProduit = newElement("p", ["class"], ["produitDescription"]);
+
+    nomProduit.textContent = produits[i].name;
+    descriptionProduit.textContent = produits[i].description;
+
+    blocArticles.appendChild(lienCanape);
+    lienCanape.appendChild(canape);
+    canape.appendChild(imageProduit);
+    canape.appendChild(nomProduit);
+    canape.appendChild(descriptionProduit);
+  }
+}
 
 /**
  * Effectue une requête sur l'API et récupère au format JSON les produits de l'API.
@@ -55,49 +61,11 @@ let blocArticles = document.getElementById("items");
  */
 
 fetch("http://localhost:3000/api/products/")
-  .then(function (res) {
-    if (res.ok) {
-      return res.json();
-    }
-  })
+  .then((res) => res.json())
   /** Parcourt la liste des produits et les affiche sur la page d'accueil
    * Détails des produits affichés: id, image, nom et description.
    */
-  .then(function (produits) {
-    console.log(produits);
-    for (let i in produits) {
-      let lienCanape = newElement(
-        "a",
-        ["href"],
-        [`./product.html?id=` + produits[i]._id]
-      );
-
-      let canape = newElement("article");
-
-      let imageProduit = newElement(
-        "img",
-        ["src", "alt"],
-        [produits[i].imageUrl, produits[i].altTxt]
-      );
-
-      let nomProduit = newElement("h3", ["class"], ["productName"]);
-
-      let descriptionProduit = newElement(
-        "p",
-        ["class"],
-        ["produitDescription"]
-      );
-
-      setText(nomProduit, produits[i].name);
-      setText(descriptionProduit, produits[i].description);
-
-      append(blocArticles, lienCanape);
-      append(lienCanape, canape);
-      append(canape, imageProduit);
-      append(canape, nomProduit);
-      append(canape, descriptionProduit);
-    }
-  })
+  .then(displayProduits)
   .catch(function (err) {
     blocArticles.innerHTML = "Impossible d'afficher les produits";
   });
