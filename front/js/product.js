@@ -116,7 +116,7 @@ if (url.searchParams.has("id")) {
   let getColors = "";
   let getQuantity = "";
   let id = url.searchParams.get("id");
-  fetch("http://localhost:3000/api/products/" + id)
+  fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
     /**
      * Affiche les détails du produit dans la page
