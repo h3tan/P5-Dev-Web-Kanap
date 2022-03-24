@@ -22,14 +22,14 @@ let blocArticles = document.getElementById("items");
 
 /**
  * Affiche les produits dans la page
- * @param {Array} produits
+ * @param {Object} produits
  */
 function displayProduits(produits) {
   for (let i in produits) {
     let lienCanape = newElement(
       "a",
       ["href"],
-      [`./product.html?id=` + produits[i]._id]
+      [`./product.html?id= ${produits[i]._id}`]
     );
 
     let canape = newElement("article");
