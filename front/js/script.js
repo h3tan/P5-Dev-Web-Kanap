@@ -1,3 +1,5 @@
+let blocArticles = document.getElementById("items");
+
 /**
  * Créé une balise <element>, si des attributs sont présents, implante ces attributs dans la balise
  * @param {String} element
@@ -18,13 +20,27 @@ function newElement(element, attribut, attributName) {
   }
 }
 
-let blocArticles = document.getElementById("items");
+/**
+ * Récupère la liste des produits
+ * @returns
+ */
+async function getProduits() {
+  let response = await fetch("http://localhost:3000/api/products/");
+  if (!response.ok) {
+    blocArticles.textContent = "Articles introuvables!";
+    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    throw new Error(message);
+  }
+  let resJson = await response.json();
+  return resJson;
+}
 
 /**
  * Affiche les produits dans la page
  * @param {Object} produits
  */
-function displayProduits(produits) {
+async function displayProduits() {
+  let produits = await getProduits();
   for (let i in produits) {
     let lienCanape = newElement(
       "a",
@@ -55,17 +71,4 @@ function displayProduits(produits) {
   }
 }
 
-/**
- * Effectue une requête sur l'API et récupère au format JSON les produits de l'API.
- * En cas d'erreur, affiche dans la page d'accueil l'impossibilité d'afficher les produits
- */
-
-fetch("http://localhost:3000/api/products/")
-  .then((res) => res.json())
-  /** Parcourt la liste des produits et les affiche sur la page d'accueil
-   * Détails des produits affichés: id, image, nom et description.
-   */
-  .then(displayProduits)
-  .catch(function (err) {
-    blocArticles.innerHTML = "Impossible d'afficher les produits";
-  });
+displayProduits();
