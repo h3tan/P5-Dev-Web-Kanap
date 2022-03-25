@@ -1,6 +1,3 @@
-let colorsTag = document.getElementById("colors");
-let quantityTag = document.getElementById("quantity");
-
 /**
  * Ajoute les balises <option> avec les valeurs passées en paramètres
  * @param {Array} options
@@ -9,7 +6,7 @@ function setOptions(id, options) {
   for (let i in options) {
     let optionTag = document.createElement("option");
     optionTag.setAttribute("value", options[i]);
-    optionTag.innerHTML = options[i];
+    optionTag.textContent = options[i];
     document.getElementById(id).appendChild(optionTag);
   }
 }
@@ -119,6 +116,8 @@ function goToCartPage(add) {
  * @param {Array} product
  */
 function updateStorage(id) {
+  let colorsTag = document.getElementById("colors");
+  let quantityTag = document.getElementById("quantity");
   let product = verifyQuantityAndColors(id, quantityTag.value, colorsTag.value);
   if (product == 0) {
     alert("Veuillez choisir une quantité et une couleur");
