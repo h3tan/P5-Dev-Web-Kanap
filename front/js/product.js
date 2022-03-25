@@ -1,8 +1,5 @@
-let url = new URL(document.location);
-let blocPanier = document.getElementById("cart__items");
-let menuCouleurs = document.getElementById("colors");
-let menuQuantite = document.getElementById("quantity");
-let bouton = document.getElementById("addToCart");
+let colorsTag = document.getElementById("colors");
+let quantityTag = document.getElementById("quantity");
 
 /**
  * Ajoute les balises <option> avec les valeurs passées en paramètres
@@ -18,15 +15,44 @@ function setOptions(id, options) {
 }
 
 /**
+ * Retourne l'ID du produit dans l'url de la page
+ * @returns
+ */
+function getUrlId() {
+  let url = new URL(document.location);
+  if (url.searchParams.has("id")) {
+    return url.searchParams.get("id");
+  } else {
+    document.querySelector(".item").textContent = "ID introuvable";
+  }
+}
+
+/**
+ * Retourne les informations d'un produit à partir de son clic sur la page d'accueil
+ * @returns
+ */
+async function getProduitById() {
+  id = getUrlId();
+  let response = await fetch(`http://localhost:3000/api/products/${id}`);
+  if (!response.ok) {
+    document.querySelector(".item").textContent = "Produit introuvable!";
+    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    throw new Error(message);
+  }
+  let resJson = await response.json();
+  return resJson;
+}
+
+/**
  * Vérifie si la quantité est entre 0 et 300 et qu'une couleur a bien été sélectionnée
  * Retourne un tableau contenant l'id, la quantité et les couleurs du produit souhaité
- * Retourne 0 si les deux conditions ne sont pas satisfaites
+ * Retourne 0 si l'une des deux conditions n'est pas satisfaite
  * @param {String} id
  * @param {Number} quantity
  * @param {String} colors
  * @returns
  */
-function verifyProduct(id, quantity, colors) {
+function verifyQuantityAndColors(id, quantity, colors) {
   if (quantity == 0 || quantity > 300 || colors == "") {
     return 0;
   } else {
@@ -46,8 +72,8 @@ function panierStringToPanier(cart) {
   let newCart = [];
   let i = 0;
   while (i < cart.length) {
-    let produit = [cart[i], Number(cart[i + 1]), cart[i + 2]];
-    newCart.push(produit);
+    let product = [cart[i], Number(cart[i + 1]), cart[i + 2]];
+    newCart.push(product);
     i = i + 3;
   }
   return newCart;
@@ -71,82 +97,82 @@ function searchProduct(cart, product) {
 }
 
 /**
- * Met à jour le panier en fonction de l'ajout (mise à jour de la quantité ou ajout dans le panier)
+ * Si l'ajout est réussi, demande à l'utilisateur s'il veut être dirigé vers la page Panier
+ * @param {Boolean} add
+ */
+function goToCartPage(add) {
+  let quantityAdded = "";
+  let productAdded = "";
+  if (add == true) {
+    quantityAdded = window.confirm("Quantité mise à jour, allez au Panier?");
+  } else {
+    productAdded = window.confirm("Produit ajouté, allez au Panier?");
+  }
+  if (quantityAdded == true || productAdded == true) {
+    document.location.href = "../html/cart.html";
+  }
+}
+
+/**
+ * Met à jour le panier en fonction du type d'ajout (mise à jour de la quantité ou ajout d'un nouveau produit')
  * @param {Array} cart
  * @param {Array} product
  */
-function updateStorage(cart, product) {
-  if (localStorage.length == 0) {
-    localStorage.setItem("cart", product);
-    alert("Produit ajouté au panier!");
+function updateStorage(id) {
+  let product = verifyQuantityAndColors(id, quantityTag.value, colorsTag.value);
+  if (product == 0) {
+    alert("Veuillez choisir une quantité et une couleur");
   } else {
-    cart = panierStringToPanier(localStorage.getItem("cart"));
-    if (searchProduct(cart, product)) {
-      localStorage.setItem("cart", cart);
-      alert("Quantité mise à jour!");
+    if (localStorage.length == 0) {
+      localStorage.setItem("cart", product);
+      goToCartPage(false);
     } else {
-      cart.push(product);
-      localStorage.setItem("cart", cart);
-      alert("Produit ajouté au panier!");
+      cart = panierStringToPanier(localStorage.getItem("cart"));
+      if (searchProduct(cart, product)) {
+        localStorage.setItem("cart", cart);
+        goToCartPage(true);
+      } else {
+        cart.push(product);
+        localStorage.setItem("cart", cart);
+        goToCartPage(false);
+      }
     }
   }
 }
 
 /**
- * Ajoute le produit dans le panier
- * @param {String} id
- * @param {Number} quantity
- * @param {String} colors
- * @returns {Boolean}
+ * Gère l'ajout au panier lorsqu'on clique sur le bouton "Ajouter au panier"
  */
-function addToCart(id, quantity, colors) {
-  let currentCart = [];
-  let product = verifyProduct(id, quantity, colors);
-  if (product == 0) {
-    alert("Veuillez choisir une quantité et une couleur");
-    return false;
-  } else {
-    updateStorage(currentCart, product);
-    return true;
-  }
+async function addToCart() {
+  let addToCartButton = document.getElementById("addToCart");
+  addToCartButton.addEventListener("click", function () {
+    updateStorage(getUrlId());
+  });
 }
 
-/** Récupère l'id dans l'URL de la page */
-if (url.searchParams.has("id")) {
-  let getColors = "";
-  let getQuantity = "";
-  let id = url.searchParams.get("id");
-  fetch(`http://localhost:3000/api/products/${id}`)
-    .then((res) => res.json())
-    /**
-     * Affiche les détails du produit dans la page
-     * La boucle for ajoute les options de couleurs du produit dans le <select>
-     */
-    .then((produit) => {
-      let imageProduit = document.createElement("img");
-      imageProduit.setAttribute("src", produit.imageUrl);
-      imageProduit.setAttribute("alt", produit.altTxt);
-      document.querySelector(".item__img").appendChild(imageProduit);
+/**
+ * Construit les éléments nécessaires à l'affiche des informations du produit
+ */
+async function displayProduitById() {
+  let product = await getProduitById();
+  let imageProduct = document.createElement("img");
+  imageProduct.setAttribute("src", product.imageUrl);
+  imageProduct.setAttribute("alt", product.altTxt);
+  document.querySelector(".item__img").appendChild(imageProduct);
 
-      document.getElementById("title").textContent = produit.name;
-      document.getElementById("price").textContent = produit.price;
-      document.getElementById("description").textContent = produit.description;
+  document.getElementById("title").textContent = product.name;
+  document.getElementById("price").textContent = product.price;
+  document.getElementById("description").textContent = product.description;
 
-      setOptions("colors", produit.colors);
-
-      menuCouleurs.addEventListener("change", function () {
-        getColors = menuCouleurs.value;
-      });
-      menuQuantite.addEventListener("change", function () {
-        getQuantity = menuQuantite.value;
-      });
-
-      /**
-       * Ajoute le produit au panier au moment du clic sur le bouton
-       */
-      bouton.addEventListener("click", function () {
-        addToCart(id, getQuantity, getColors);
-      });
-    })
-    .catch((err) => {});
+  setOptions("colors", product.colors);
 }
+
+/**
+ * Affiche les informations du produit et permet l'ajout du produit au panier
+ */
+async function productPage() {
+  await displayProduitById();
+  addToCart();
+}
+
+productPage();
