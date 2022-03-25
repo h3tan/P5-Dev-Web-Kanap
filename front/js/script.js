@@ -45,7 +45,7 @@ async function displayProduits() {
     let lienCanape = newElement(
       "a",
       ["href"],
-      [`./product.html?id= ${produits[i]._id}`]
+      [`./product.html?id=${produits[i]._id}`]
     );
 
     let canape = newElement("article");
