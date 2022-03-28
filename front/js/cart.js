@@ -267,23 +267,21 @@ function deleteProduct() {
           productToDeleteTag.dataset.id == cart[i][0] &&
           productToDeleteTag.dataset.color == cart[i][2]
         ) {
-          if (cart.length == 1) {
-            cart.pop();
-            displayTotalPrice.textContent = 0;
-            displayTotalQuantity.textContent = 0;
-            localStorage.removeItem("cart");
             cartTag.removeChild(productToDeleteTag);
-            displayEmptyCart(cartTag);
-          } else {
-            totalPrice =
-              totalPrice - cart[i][1] * parseInt(priceTag.textContent);
-            displayTotalQuantity.textContent = getTotalQuantity(cart);
-            displayTotalPrice.textContent = totalPrice;
-            cart.splice(i, 1);
-            localStorage.setItem("cart", cart);
-            cartTag.removeChild(productToDeleteTag);
-            //window.location.reload();
-          }
+            if (cart.length == 1) {
+              cart.pop();
+              displayTotalPrice.textContent = 0;
+              displayTotalQuantity.textContent = 0;
+              localStorage.removeItem("cart");
+              displayEmptyCart(cartTag);
+            } else {
+              totalPrice =
+                totalPrice - cart[i][1] * parseInt(priceTag.textContent);
+              displayTotalPrice.textContent = totalPrice;
+              cart.splice(i, 1);
+              localStorage.setItem("cart", cart);
+              displayTotalQuantity.textContent = getTotalQuantity(cart);
+            }
         }
       }
     });
