@@ -222,11 +222,42 @@ async function displayCart() {
   }
 }
 
+/** Met à jour la quantité du produit dans le panier et la quantité totale et le prix total sur la page
+*/
+function updateQuantity() {
+ let cart = panierStringToArray(localStorage.getItem("cart"));
+ let totalPrice = parseInt(displayTotalPrice.textContent);
+ let inputsQuantity = document.querySelectorAll(".itemQuantity");
+ inputsQuantity.forEach((inputTag) => {
+   let product = inputTag.closest("article");
+   let priceTag = product.querySelector("p:nth-child(3)");
+   inputTag.addEventListener("change", (event) => {
+     for (let i in cart) {
+       if (
+         product.dataset.id == cart[i][0] &&
+         product.dataset.color == cart[i][2]
+       ) {
+         if (cart[i][1] < Number(event.target.value)) {
+           totalPrice = totalPrice + parseInt(priceTag.textContent);
+         } else {
+           totalPrice = totalPrice - parseInt(priceTag.textContent);
+         }
+         cart[i][1] = Number(event.target.value);
+         displayTotalQuantity.textContent = getTotalQuantity(cart);
+         displayTotalPrice.textContent = totalPrice;
+         localStorage.setItem("cart", cart);
+       }
+     }
+   });
+ });
+}
+
 /**
  * Affiche le panier
  */
 async function cartPage() {
   await displayCart();
+  updateQuantity();
 }
 
 cartPage();
