@@ -41,14 +41,16 @@ function newElement(element, attribut, attributName) {
  * @returns
  */
 function panierStringToArray(cart) {
-  cart = cart.split(",");
-  let newCart = [];
-  let i = 0;
-  for (let i = 0; i < cart.length; i = i + 3) {
-    let produit = [cart[i], Number(cart[i + 1]), cart[i + 2]];
-    newCart.push(produit);
+  if (cart.length > 0) {
+    cart = cart.split(",");
+    let newCart = [];
+    let i = 0;
+    for (let i = 0; i < cart.length; i = i + 3) {
+      let produit = [cart[i], Number(cart[i + 1]), cart[i + 2]];
+      newCart.push(produit);
+    }
+    return newCart;
   }
-  return newCart;
 }
 
 /**
@@ -100,10 +102,10 @@ function searchProductInList(index, list) {
  * @param {Array} cart
  */
 async function displayCart() {
-  let cart = localStorage.getItem("cart");
-  if (cart == null) {
+  if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
+    let cart = localStorage.getItem("cart");
     let totalPrice = 0;
     let totalQuantity = 0;
     cart = panierStringToArray(cart);
@@ -223,33 +225,69 @@ async function displayCart() {
 }
 
 /** Met à jour la quantité du produit dans le panier et la quantité totale et le prix total sur la page
-*/
+ */
 function updateQuantity() {
- let cart = panierStringToArray(localStorage.getItem("cart"));
- let totalPrice = parseInt(displayTotalPrice.textContent);
- let inputsQuantity = document.querySelectorAll(".itemQuantity");
- inputsQuantity.forEach((inputTag) => {
-   let product = inputTag.closest("article");
-   let priceTag = product.querySelector("p:nth-child(3)");
-   inputTag.addEventListener("change", (event) => {
-     for (let i in cart) {
-       if (
-         product.dataset.id == cart[i][0] &&
-         product.dataset.color == cart[i][2]
-       ) {
-         if (cart[i][1] < Number(event.target.value)) {
-           totalPrice = totalPrice + parseInt(priceTag.textContent);
-         } else {
-           totalPrice = totalPrice - parseInt(priceTag.textContent);
-         }
-         cart[i][1] = Number(event.target.value);
-         displayTotalQuantity.textContent = getTotalQuantity(cart);
-         displayTotalPrice.textContent = totalPrice;
-         localStorage.setItem("cart", cart);
-       }
-     }
-   });
- });
+  let inputsQuantity = document.querySelectorAll(".itemQuantity");
+  inputsQuantity.forEach((inputTag) => {
+    let productToModifyTag = inputTag.closest("article");
+    let priceTag = productToModifyTag.querySelector("p:nth-child(3)");
+    inputTag.addEventListener("change", (event) => {
+      let cart = panierStringToArray(localStorage.getItem("cart"));
+      let totalPrice = parseInt(displayTotalPrice.textContent);
+      for (let i in cart) {
+        if (
+          productToModifyTag.dataset.id == cart[i][0] &&
+          productToModifyTag.dataset.color == cart[i][2]
+        ) {
+          if (cart[i][1] < Number(event.target.value)) {
+            totalPrice = totalPrice + parseInt(priceTag.textContent);
+          } else {
+            totalPrice = totalPrice - parseInt(priceTag.textContent);
+          }
+          cart[i][1] = Number(event.target.value);
+          displayTotalQuantity.textContent = getTotalQuantity(cart);
+          displayTotalPrice.textContent = totalPrice;
+          localStorage.setItem("cart", cart);
+        }
+      }
+    });
+  });
+}
+
+function deleteProduct() {
+  let deleteButtons = document.querySelectorAll(".deleteItem");
+  deleteButtons.forEach((deleteTag) => {
+    let productToDeleteTag = deleteTag.closest("article");
+    let priceTag = productToDeleteTag.querySelector("p:nth-child(3)");
+    deleteTag.addEventListener("click", (event) => {
+      let cart = panierStringToArray(localStorage.getItem("cart"));
+      let totalPrice = parseInt(displayTotalPrice.textContent);
+      for (let i in cart) {
+        if (
+          productToDeleteTag.dataset.id == cart[i][0] &&
+          productToDeleteTag.dataset.color == cart[i][2]
+        ) {
+          if (cart.length == 1) {
+            cart.pop();
+            displayTotalPrice.textContent = 0;
+            displayTotalQuantity.textContent = 0;
+            localStorage.removeItem("cart");
+            cartTag.removeChild(productToDeleteTag);
+            displayEmptyCart(cartTag);
+          } else {
+            totalPrice =
+              totalPrice - cart[i][1] * parseInt(priceTag.textContent);
+            displayTotalQuantity.textContent = getTotalQuantity(cart);
+            displayTotalPrice.textContent = totalPrice;
+            cart.splice(i, 1);
+            localStorage.setItem("cart", cart);
+            cartTag.removeChild(productToDeleteTag);
+            //window.location.reload();
+          }
+        }
+      }
+    });
+  });
 }
 
 /**
@@ -257,6 +295,7 @@ function updateQuantity() {
  */
 async function cartPage() {
   await displayCart();
+  deleteProduct();
   updateQuantity();
 }
 
