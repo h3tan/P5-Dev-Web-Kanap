@@ -107,6 +107,18 @@ async function getProductsFromAPI() {
   return resJson;
 }
 
+async function getSingleProductFromAPI(id) {
+  let response = await fetch(`http://localhost:3000/api/products/${id}`);
+  if (!response.ok) {
+    cartTag.textContent =
+      "Impossible de communiquer avec la liste des produits";
+    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    throw new Error(message);
+  }
+  let resJson = await response.json();
+  return resJson;
+}
+
 /**
  * Cherche l'élément index dans list
  * @param {String} index
@@ -126,7 +138,7 @@ function searchProductInList(index, list) {
  * Construit les éléments nécessaires pour afficher le panier
  * @param {Array} cart
  */
-async function displayCart() {
+async function displayCart(productList) {
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
@@ -134,7 +146,6 @@ async function displayCart() {
     let totalPrice = 0;
     let totalQuantity = 0;
     cart = cartStringToArray(cart);
-    let productList = await getProductsFromAPI();
     for (let i in cart) {
       let productFound = searchProductInList(cart[i][0], productList);
       if (productFound != false) {
@@ -251,11 +262,12 @@ async function displayCart() {
 
 /** Met à jour la quantité du produit dans le panier et la quantité totale et le prix total sur la page
  */
-function updateQuantity() {
+async function updateQuantity() {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
-  inputsQuantity.forEach((inputTag) => {
+  inputsQuantity.forEach(async (inputTag) => {
     let productToModifyTag = inputTag.closest("article");
-    let priceTag = productToModifyTag.querySelector("p:nth-child(3)");
+    let product = await getSingleProductFromAPI(productToModifyTag.dataset.id);
+    let priceTag = product.price;
     inputTag.addEventListener("change", (event) => {
       let cart = cartStringToArray(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
@@ -265,9 +277,9 @@ function updateQuantity() {
           productToModifyTag.dataset.color == cart[i][2]
         ) {
           if (cart[i][1] < Number(event.target.value)) {
-            totalPrice = totalPrice + parseInt(priceTag.textContent);
+            totalPrice = totalPrice + priceTag;
           } else {
-            totalPrice = totalPrice - parseInt(priceTag.textContent);
+            totalPrice = totalPrice - priceTag;
           }
           cart[i][1] = Number(event.target.value);
           displayTotalQuantity.textContent = getTotalQuantity(cart);
@@ -282,11 +294,13 @@ function updateQuantity() {
 /**
  * Supprime un produit du panier
  */
-function deleteProduct() {
+async function deleteProduct() {
   let deleteButtons = document.querySelectorAll(".deleteItem");
-  deleteButtons.forEach((deleteTag) => {
+  deleteButtons.forEach(async (deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
-    let priceTag = productToDeleteTag.querySelector("p:nth-child(3)");
+    let product = await getSingleProductFromAPI(productToDeleteTag.dataset.id);
+    let priceTag = product.price;
+    //let priceTag = productToDeleteTag.querySelector("p:nth-child(3)");
     deleteTag.addEventListener("click", (event) => {
       let cart = cartStringToArray(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
@@ -303,8 +317,7 @@ function deleteProduct() {
             localStorage.removeItem("cart");
             displayEmptyCart(cartTag);
           } else {
-            totalPrice =
-              totalPrice - cart[i][1] * parseInt(priceTag.textContent);
+            totalPrice = totalPrice - cart[i][1] * priceTag;
             displayTotalPrice.textContent = totalPrice;
             cart.splice(i, 1);
             localStorage.setItem("cart", cart);
@@ -428,14 +441,10 @@ function orderProductFromCart() {
  * Gère la page Panier
  */
 async function cartPage() {
-  await displayCart();
+  productList = await getProductsFromAPI();
+  displayCart(productList);
   deleteProduct();
   updateQuantity();
-  inputCheck(noNumberRegex, "firstName", "firstNameErrorMsg");
-  inputCheck(noNumberRegex, "lastName", "lastNameErrorMsg");
-  inputCheck(addressRegex, "address", "addressErrorMsg");
-  inputCheck(noNumberRegex, "city", "cityErrorMsg");
-  inputCheck(emailRegex, "email", "emailErrorMsg");
   orderProductFromCart();
 }
 
