@@ -2,11 +2,11 @@
  * Ajoute les balises <option> avec les valeurs passées en paramètres
  * @param {Array} options
  */
-function setOptions(id, options) {
-  for (let i in options) {
+function setOptions(id, optionsList) {
+  for (let option of optionsList) {
     let optionTag = document.createElement("option");
-    optionTag.setAttribute("value", options[i]);
-    optionTag.textContent = options[i];
+    optionTag.setAttribute("value", option);
+    optionTag.textContent = option;
     document.getElementById(id).appendChild(optionTag);
   }
 }
@@ -67,11 +67,9 @@ function verifyQuantityAndColors(id, quantity, colors) {
 function panierStringToArray(cart) {
   cart = cart.split(",");
   let newCart = [];
-  let i = 0;
-  while (i < cart.length) {
+  for (let i = 0; i < cart.length; i = i + 3) {
     let product = [cart[i], Number(cart[i + 1]), cart[i + 2]];
     newCart.push(product);
-    i = i + 3;
   }
   return newCart;
 }
@@ -84,9 +82,9 @@ function panierStringToArray(cart) {
  * @returns
  */
 function searchProduct(cart, product) {
-  for (i in cart) {
-    if (cart[i][0] == product[0] && cart[i][2] == product[2]) {
-      cart[i][1] += Number(product[1]);
+  for (let articleInCart of cart) {
+    if (articleInCart[0] == product[0] && articleInCart[2] == product[2]) {
+      articleInCart[1] += Number(product[1]);
       return true;
     }
   }
@@ -97,10 +95,10 @@ function searchProduct(cart, product) {
  * Gère la redirection vers la page Panier en fonction du type d'ajout (mise à jour de la quantité ou ajout du produit)
  * @param {Boolean} add
  */
-function goToCartPage(add) {
+function goToCartPage(addType) {
   let quantityUpdated = "";
   let productAdded = "";
-  if (add == true) {
+  if (addType == true) {
     quantityUpdated = window.confirm("Quantité mise à jour, allez au Panier?");
   } else {
     productAdded = window.confirm("Produit ajouté, allez au Panier?");
@@ -111,7 +109,7 @@ function goToCartPage(add) {
 }
 
 /**
- * Met à jour le panier en fonction du type d'ajout (mise à jour de la quantité ou ajout d'un nouveau produit')
+ * Met à jour le panier en fonction du type d'ajout (mise à jour de la quantité ou ajout d'un nouveau produit)
  * @param {Array} cart
  * @param {Array} product
  */
@@ -121,29 +119,28 @@ function updateStorage(id) {
   let product = verifyQuantityAndColors(id, quantityTag.value, colorsTag.value);
   if (product == 0) {
     alert("Veuillez choisir une quantité et une couleur");
+    return;
+  }
+  if (localStorage.length == 0) {
+    localStorage.setItem("cart", product);
+    goToCartPage(false);
+    return;
+  }
+  cart = panierStringToArray(localStorage.getItem("cart"));
+  if (searchProduct(cart, product)) {
+    localStorage.setItem("cart", cart);
+    goToCartPage(true);
   } else {
-    if (localStorage.length == 0) {
-      localStorage.setItem("cart", product);
-      goToCartPage(false);
-    } else {
-      cart = panierStringToArray(localStorage.getItem("cart"));
-      console.log(cart);
-      if (searchProduct(cart, product)) {
-        localStorage.setItem("cart", cart);
-        goToCartPage(true);
-      } else {
-        cart.push(product);
-        localStorage.setItem("cart", cart);
-        goToCartPage(false);
-      }
-    }
+    cart.push(product);
+    localStorage.setItem("cart", cart);
+    goToCartPage(false);
   }
 }
 
 /**
  * Gère l'ajout au panier lorsqu'on clique sur le bouton "Ajouter au panier"
  */
-function addToCart() {
+function addActionAddProductToCart() {
   let addToCartButton = document.getElementById("addToCart");
   addToCartButton.addEventListener("click", function () {
     updateStorage(getIdFromUrl());
@@ -170,7 +167,7 @@ async function displayProductById() {
  */
 async function productPage() {
   await displayProductById();
-  addToCart();
+  addActionAddProductToCart();
 }
 
 productPage();
