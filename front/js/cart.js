@@ -127,7 +127,7 @@ async function getSingleProductFromAPI(id) {
 function searchProductInList(index, list) {
   for (let i in list) {
     if (index == list[i]._id) {
-      return true;
+      return list[i];
     }
   }
   return false;
@@ -145,8 +145,8 @@ async function displayCart(productList) {
     let cart = JSON.parse(localStorage.getItem("cart"));
     let totalPrice = 0;
     for (let i in cart) {
-      if (searchProductInList(cart[i].id, productList) == true) {
-        productFound = productList[i];
+      productFound = searchProductInList(cart[i].id, productList);
+      if (productFound != false) {
         // <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
         let newArticle = createTag(
           "article",
