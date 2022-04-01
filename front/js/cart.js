@@ -9,7 +9,7 @@ const noNumberRegex = /^[A-Z]([^0-9\_])*$/;
  * Code postal: Doit être composé de 5 chiffres
  */
 const addressRegex =
-  /^([0-9]|[0-9][0-9]|1[0-9][0-9]) [0-9A-Za-zàéèçù\- ]+ ([0-9]{5})+$/;
+  /^([0-9]|[0-9][0-9]|1[0-9][0-9]) [0-9A-Za-zàéèçùâêûôîëï\- ]+ ([0-9]{5})+$/;
 /**
  * Doit être de la forme "expression@nomdedomaine.com"
  */
@@ -48,25 +48,6 @@ function createTag(tag, attribute, attributeName) {
 }
 
 /**
- * Convertit le panier qui est sous forme de String en un tableau
- * à deux dimensions contenant des tableaux à trois éléments
- * @param {String} cart
- * @returns
- */
-function cartStringToArray(cart) {
-  if (cart.length > 0) {
-    cart = cart.split(",");
-    let newCart = [];
-    let i = 0;
-    for (let i = 0; i < cart.length; i = i + 3) {
-      let produit = [cart[i], Number(cart[i + 1]), cart[i + 2]];
-      newCart.push(produit);
-    }
-    return newCart;
-  }
-}
-
-/**
  * Calcule la quantité totale des articles du panier
  * @param {Array} cart
  * @returns {Number}
@@ -74,9 +55,22 @@ function cartStringToArray(cart) {
 function getTotalQuantity(cart) {
   let totalQuantity = 0;
   for (let i in cart) {
-    totalQuantity += cart[i][1];
+    totalQuantity += Number(cart[i].quantity);
   }
   return totalQuantity;
+}
+
+// Calcule le prix total du panier
+async function getTotalPriceOfCart() {
+  let totalPrice = 0;
+  let cart = JSON.parse(localStorage.getItem("cart"));
+  let productsList = await getProductsFromAPI();
+  for (let i in cart) {
+    if (searchProductInList(cart[i].id, productsList)) {
+      totalPrice = totalPrice + cart[i].quantity * productsList[i].price;
+    }
+  }
+  return totalPrice;
 }
 
 /**
@@ -84,9 +78,9 @@ function getTotalQuantity(cart) {
  * @returns {Array}
  */
 function getProductsIdFromCart() {
-  let cart = cartStringToArray(localStorage.getItem("cart"));
+  let cart = JSON.parse(localStorage.getItem("cart"));
   for (let i in cart) {
-    cart[i] = cart[i][0];
+    cart[i] = cart[i].id;
   }
   return cart;
 }
@@ -107,6 +101,11 @@ async function getProductsFromAPI() {
   return resJson;
 }
 
+/**
+ * Récupère un produit dans l'API à partir de son id
+ * @param {String} id
+ * @returns
+ */
 async function getSingleProductFromAPI(id) {
   let response = await fetch(`http://localhost:3000/api/products/${id}`);
   if (!response.ok) {
@@ -128,131 +127,117 @@ async function getSingleProductFromAPI(id) {
 function searchProductInList(index, list) {
   for (let i in list) {
     if (index == list[i]._id) {
-      return list[i];
+      return true;
     }
   }
   return false;
 }
 
 /**
- * Construit les éléments nécessaires pour afficher le panier
- * @param {Array} cart
+ * Construit les éléments nécessaires pour afficher le panier, liste de tous les produits en paramètre afin
+ * de récupérer les informations manquantes aux produits du panier
+ * @param {Array} productList
  */
 async function displayCart(productList) {
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
-    let cart = localStorage.getItem("cart");
+    let cart = JSON.parse(localStorage.getItem("cart"));
     let totalPrice = 0;
-    let totalQuantity = 0;
-    cart = cartStringToArray(cart);
     for (let i in cart) {
-      let productFound = searchProductInList(cart[i][0], productList);
-      if (productFound != false) {
+      if (searchProductInList(cart[i].id, productList) == true) {
+        productFound = productList[i];
+        // <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
         let newArticle = createTag(
           "article",
           ["class", "data-id", "data-color"],
-          ["cart__item", cart[i][0], cart[i][2]]
+          ["cart__item", cart[i].id, cart[i].colors]
         );
-
-        /**
-         * Création du conteneur de l'image du produit
-         */
+        // <div class="cart__item__img"></div>
         let imgContainer = createTag("div", ["class"], ["cart__item__img"]);
+        // <img src="chemin de l'image" alt="texte alternatif" />
         let imgTag = createTag(
           "img",
           ["src", "alt"],
           [productFound.imageUrl, productFound.altTxt]
         );
-
-        /**
-         * Création des conteneurs avec la description du produit: nom, prix, couleurs choisies
-         */
+        // <div class="cart__item__content"></div>
         let productContent = createTag(
           "div",
           ["class"],
           ["cart__item__content"]
         );
+        // <div class="cart__item__content__description"></div>
         let descriptionTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__description"]
         );
+        // <h2>Nom du produit</h2>
         let productNameTag = createTag("h2");
         productNameTag.textContent = productFound.name;
+        // <p>Couleurs choisies</p>
         let productColorsTag = createTag("p");
-        productColorsTag.textContent = cart[i][2];
+        productColorsTag.textContent = cart[i].colors;
+        // <p>Prix du produit</p>
         let productPriceTag = createTag("p");
         productPriceTag.textContent = productFound.price + " €";
         /**
-         * Association des éléments de description dans le conteneur de description
+         * <div class="cart__item">
+         *    <div class="cart__item__content__description">
+         *      <h2></h2>
+         *      <p></p>
+         *    </div>
+         * </div>
          */
         descriptionTag.appendChild(productNameTag);
         descriptionTag.appendChild(productColorsTag);
         descriptionTag.appendChild(productPriceTag);
         productContent.appendChild(descriptionTag);
-
-        /**
-         * Création du conteneur pour changer les quantités ou supprimer un produit
-         */
+        // <div class="cart__item__content__settings"></div>
         let settingsTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings"]
         );
-
+        // <div class="cart__item__content__settings__quantity"></div>
         let settingsQuantity = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__quantity"]
         );
-        /**
-         * Création des éléments pour changer la quantité
-         */
+        // <p>Qté: </p>
         let quantityTag = createTag("p");
+        quantityTag.innerText = `Qté:`;
+        // <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
         let quantityInput = createTag(
           "input",
           ["type", "class", "name", "min", "max", "value"],
-          ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i][1]]
+          ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i].quantity]
         );
-        quantityTag.innerText = `Qté:`;
-
-        /**
-         * Création des conteneurs du lien pour supprimer un article
-         */
+        // <div class="cart__item__content__settings__delete">
         let deleteContainer = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__delete"]
         );
+        // <div class="deleteItem"></div>
         let deleteButton = createTag("div", ["class"], ["deleteItem"]);
         deleteButton.style.cursor = "pointer";
         deleteButton.textContent = "Supprimer";
         deleteContainer.appendChild(deleteButton);
-        /**
-         * Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
-         */
+        //Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
         settingsQuantity.appendChild(quantityTag);
         settingsQuantity.appendChild(quantityInput);
-
         settingsTag.appendChild(settingsQuantity);
         settingsTag.appendChild(deleteContainer);
-
         imgContainer.appendChild(imgTag);
-
         productContent.appendChild(settingsTag);
-
         newArticle.appendChild(imgContainer);
         newArticle.appendChild(productContent);
-
         cartTag.appendChild(newArticle);
-
-        displayTotalQuantity.textContent = totalQuantity;
-
-        /**
-         * Affichage de la quantité totale et du prix total au chargement du panier
-         */
-        totalPrice = totalPrice + cart[i][1] * productFound.price;
+        //Affichage de la quantité totale et du prix total du panier au chargement de la page
+        totalPrice = totalPrice + cart[i].quantity * productFound.price;
         displayTotalPrice.textContent = totalPrice;
         displayTotalQuantity.textContent = getTotalQuantity(cart);
       }
@@ -260,54 +245,50 @@ async function displayCart(productList) {
   }
 }
 
-/** Met à jour la quantité du produit dans le panier et la quantité totale et le prix total sur la page
- */
-async function updateQuantity() {
+//Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
+function updateQuantity() {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
   inputsQuantity.forEach(async (inputTag) => {
     let productToModifyTag = inputTag.closest("article");
     let product = await getSingleProductFromAPI(productToModifyTag.dataset.id);
-    let priceTag = product.price;
+    let unitPrice = product.price;
     inputTag.addEventListener("change", (event) => {
-      let cart = cartStringToArray(localStorage.getItem("cart"));
+      let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
-          productToModifyTag.dataset.id == cart[i][0] &&
-          productToModifyTag.dataset.color == cart[i][2]
+          productToModifyTag.dataset.id == cart[i].id &&
+          productToModifyTag.dataset.color == cart[i].colors
         ) {
-          if (cart[i][1] < Number(event.target.value)) {
-            totalPrice = totalPrice + priceTag;
+          if (cart[i].quantity < Number(event.target.value)) {
+            totalPrice = totalPrice + unitPrice;
           } else {
-            totalPrice = totalPrice - priceTag;
+            totalPrice = totalPrice - unitPrice;
           }
-          cart[i][1] = Number(event.target.value);
+          cart[i].quantity = event.target.value;
           displayTotalQuantity.textContent = getTotalQuantity(cart);
           displayTotalPrice.textContent = totalPrice;
-          localStorage.setItem("cart", cart);
+          localStorage.setItem("cart", JSON.stringify(cart));
         }
       }
     });
   });
 }
 
-/**
- * Supprime un produit du panier
- */
-async function deleteProduct() {
+// Supprime un produit du panier
+function deleteProduct() {
   let deleteButtons = document.querySelectorAll(".deleteItem");
   deleteButtons.forEach(async (deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
     let product = await getSingleProductFromAPI(productToDeleteTag.dataset.id);
-    let priceTag = product.price;
-    //let priceTag = productToDeleteTag.querySelector("p:nth-child(3)");
+    let unitPrice = product.price;
     deleteTag.addEventListener("click", (event) => {
-      let cart = cartStringToArray(localStorage.getItem("cart"));
+      let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
-          productToDeleteTag.dataset.id == cart[i][0] &&
-          productToDeleteTag.dataset.color == cart[i][2]
+          productToDeleteTag.dataset.id == cart[i].id &&
+          productToDeleteTag.dataset.color == cart[i].colors
         ) {
           cartTag.removeChild(productToDeleteTag);
           if (cart.length == 1) {
@@ -317,10 +298,10 @@ async function deleteProduct() {
             localStorage.removeItem("cart");
             displayEmptyCart(cartTag);
           } else {
-            totalPrice = totalPrice - cart[i][1] * priceTag;
+            totalPrice = totalPrice - cart[i].quantity * unitPrice;
             displayTotalPrice.textContent = totalPrice;
             cart.splice(i, 1);
-            localStorage.setItem("cart", cart);
+            localStorage.setItem("cart", JSON.stringify(cart));
             displayTotalQuantity.textContent = getTotalQuantity(cart);
           }
         }
@@ -331,9 +312,9 @@ async function deleteProduct() {
 
 /**
  * Vérifie si le texte saisie dans tag est valide selon le regex donné en paramètre
- * @param {*} regex
- * @param {*} tag
- * @param {*} tagError
+ * @param {RegExp} regex
+ * @param {HTMLElement} tag
+ * @param {HTMLElement} tagError
  */
 function inputCheck(regex, tag, tagError) {
   let inputTag = document.getElementById(tag);
@@ -349,27 +330,23 @@ function inputCheck(regex, tag, tagError) {
 }
 
 /**
- * Récupère les informations du formulaire de renseignements
- * @returns
+ * Récupère les informations du formulaire renseigné par le client
+ * @returns {Object}
  */
 function getCustomerInformations() {
-  if (localStorage.length == 0) {
-    alert("Votre panier est vide");
-  } else {
-    let contact = {
-      firstName: document.getElementById("firstName").value,
-      lastName: document.getElementById("lastName").value,
-      address: document.getElementById("address").value,
-      city: document.getElementById("city").value,
-      email: document.getElementById("email").value,
-    };
-    return contact;
-  }
+  let contact = {
+    firstName: document.getElementById("firstName").value,
+    lastName: document.getElementById("lastName").value,
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
+    email: document.getElementById("email").value,
+  };
+  return contact;
 }
 
 /**
- * Vérifie si toutes les informations entrées par l'utilisateur sont correctes
- * @returns
+ * Vérifie si toutes les informations entrées par le client sont correctes
+ * @returns {Boolean}
  */
 function checkInformations() {
   if (
@@ -388,12 +365,10 @@ function checkInformations() {
   }
 }
 
-/**
- * Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
- */
+// Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
 async function sendInformations() {
   let products = getProductsIdFromCart();
-  let orderInformations = await fetch(
+  let orderInformationsJson = await fetch(
     "http://localhost:3000/api/products/order",
     {
       method: "POST",
@@ -407,18 +382,26 @@ async function sendInformations() {
       }),
     }
   );
-  if (!orderInformations.ok) {
-    let message = `Erreur: ${orderInformations.status}, impossible de trouver l'API`;
+  if (!orderInformationsJson.ok) {
+    let message = `Erreur: ${orderInformationsJson.status}, impossible de trouver l'API`;
     throw new Error(message);
   }
-  let orderInformationsJson = await orderInformations.json();
-  alert("Vous allez être redirigé vers la page de confirmation");
+  let orderInformations = await orderInformationsJson.json();
+  alert(`Récapitulatif de votre commande:\n
+        Nom: ${orderInformations["contact"].lastName}\n
+        Prénom: ${orderInformations["contact"].firstName}\n
+        Addresse: ${orderInformations["contact"].address}\n
+        Ville: ${orderInformations["contact"].city}\n
+        Mail: ${orderInformations["contact"].email}\n
+        Produits commandés: ${products}`);
   localStorage.removeItem("cart");
-  document.location.href = `../html/confirmation.html?orderId=${orderInformationsJson.orderId}`;
+  document.location.href = `../html/confirmation.html?orderId=${orderInformations.orderId}`;
 }
 
 /**
- * Lorsque toutes les informations entrées par l'utilisateur sont correctes, envoie les informations vers l'API
+ * Lorsque toutes les informations entrées par l'utilisateur sont correctes,
+ * appelle la fonction sendInformations pour envoyer les informations vers l'API et
+ * ainsi réaliser la commande du panier
  */
 function orderProductFromCart() {
   let orderButton = document.getElementById("order");
@@ -429,6 +412,10 @@ function orderProductFromCart() {
   inputCheck(emailRegex, "email", "emailErrorMsg");
   orderButton.addEventListener("click", (event) => {
     event.preventDefault();
+    if (localStorage.length == 0) {
+      alert("Votre panier est vide!");
+      return;
+    }
     if (checkInformations()) {
       sendInformations();
     } else {
@@ -437,12 +424,10 @@ function orderProductFromCart() {
   });
 }
 
-/**
- * Gère la page Panier
- */
+// Gère la page Panier
 async function cartPage() {
-  productList = await getProductsFromAPI();
-  displayCart(productList);
+  productsList = await getProductsFromAPI();
+  displayCart(productsList);
   deleteProduct();
   updateQuantity();
   orderProductFromCart();
