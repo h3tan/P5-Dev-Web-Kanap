@@ -60,19 +60,6 @@ function getTotalQuantity(cart) {
   return totalQuantity;
 }
 
-// Calcule le prix total du panier
-async function getTotalPriceOfCart() {
-  let totalPrice = 0;
-  let cart = JSON.parse(localStorage.getItem("cart"));
-  let productsList = await getProductsFromAPI();
-  for (let i in cart) {
-    if (searchProductInList(cart[i].id, productsList)) {
-      totalPrice = totalPrice + cart[i].quantity * productsList[i].price;
-    }
-  }
-  return totalPrice;
-}
-
 /**
  * Retourne une liste d'ID des produits présents dans le panier
  * @returns {Array}
@@ -378,7 +365,7 @@ async function sendInformations() {
       },
       body: JSON.stringify({
         contact: getCustomerInformations(),
-        products: products,
+        products: products
       }),
     }
   );
@@ -394,7 +381,6 @@ async function sendInformations() {
         Ville: ${orderInformations["contact"].city}\n
         Mail: ${orderInformations["contact"].email}\n
         Produits commandés: ${products}`);
-  localStorage.removeItem("cart");
   document.location.href = `../html/confirmation.html?orderId=${orderInformations.orderId}`;
 }
 
