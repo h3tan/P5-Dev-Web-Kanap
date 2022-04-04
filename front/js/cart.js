@@ -8,8 +8,7 @@ const noNumberRegex = /^[A-Z]([^0-9\_])*$/;
  * Nom de la rue: seuls les chiffres, caractères (majuscules et minuscules), espace et tiret sont autorisés
  * Code postal: Doit être composé de 5 chiffres
  */
-const addressRegex =
-  /^([0-9]|[0-9][0-9]|1[0-9][0-9]) [0-9A-Za-zàéèçùâêûôîëï\- ]+ ([0-9]{5})+$/;
+const addressRegex = /^([0-9]|[0-9][0-9]|1[0-9][0-9]) ([^0-9\_])+ ([0-9]{5})+$/;
 /**
  * Doit être de la forme "expression@nomdedomaine.com"
  */
@@ -62,7 +61,7 @@ function getTotalQuantity(cart) {
 
 /**
  * Retourne une liste d'ID des produits présents dans le panier
- * @returns {Array}
+ * @returns {Array of String}
  */
 function getProductsIdFromCart() {
   let cart = JSON.parse(localStorage.getItem("cart"));
@@ -239,7 +238,7 @@ function updateQuantity() {
     let productToModifyTag = inputTag.closest("article");
     let product = await getSingleProductFromAPI(productToModifyTag.dataset.id);
     let unitPrice = product.price;
-    inputTag.addEventListener("change", (event) => {
+    inputTag.addEventListener("input", (event) => {
       let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
@@ -365,7 +364,7 @@ async function sendInformations() {
       },
       body: JSON.stringify({
         contact: getCustomerInformations(),
-        products: products
+        products: products,
       }),
     }
   );
