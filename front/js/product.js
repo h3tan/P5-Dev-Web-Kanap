@@ -81,6 +81,21 @@
    return false;
  }
 
+/**
+ * Permet de trier un tableau d'objet en les regroupant par ID
+ * A appeler avec la méthode "sort()" des tableaux
+ * @param {Object} productA
+ * @param {Object} productB
+ * @returns
+ */
+ function sortById(productA, productB) {
+  if (productA.id > productB.id) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
  /**
   * Gère la redirection vers la page Panier en fonction du type d'ajout (mise à jour de la quantité ou ajout du produit)
   * @param {Boolean} addType
@@ -127,6 +142,7 @@
      return;
    }
    cart.push(product);
+   cart.sort(sortById);
    localStorage.setItem("cart", JSON.stringify(cart));
    goToCartPage(false);
  }
