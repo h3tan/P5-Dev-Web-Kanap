@@ -1,10 +1,8 @@
-let blocArticles = document.getElementById("items");
-
 /**
  * Créé une balise <element>, si des attributs sont présents, implante ces attributs dans la balise
  * @param {String} element
- * @param {Array} attribut : Array of String
- * @param {Array} attributName : Array of String
+ * @param {String[]} attribut : Array of String
+ * @param {String[]} attributName : Array of String
  * Taille de attribut et attributName doivent être égales
  * @returns {HTMLElement}
  */
@@ -24,10 +22,10 @@ function newElement(element, attribut, attributName) {
  * Récupère la liste des produits
  * @returns
  */
-async function getProduits() {
+async function getAllProductsFromAPI() {
   let response = await fetch("http://localhost:3000/api/products/");
   if (!response.ok) {
-    blocArticles.textContent = "Articles introuvables!";
+    itemsTag.textContent = "Articles introuvables!";
     let message = `Erreur: ${response.status}, impossible de trouver l'API`;
     throw new Error(message);
   }
@@ -37,38 +35,39 @@ async function getProduits() {
 
 /**
  * Affiche les produits dans la page
- * @param {Object} produits
+ * @param {Object} products
  */
-async function displayProduits() {
-  let produits = await getProduits();
-  for (let i in produits) {
-    let lienCanape = newElement(
+async function displayProducts() {
+  let itemsTag = document.getElementById("items");
+  let productList = await getAllProductsFromAPI();
+  for (let i in productList) {
+    let productLink = newElement(
       "a",
       ["href"],
-      [`./product.html?id=${produits[i]._id}`]
+      [`./product.html?id=${productList[i]._id}`]
     );
 
-    let canape = newElement("article");
+    let productArticle = newElement("article");
 
-    let imageProduit = newElement(
+    let productImage = newElement(
       "img",
       ["src", "alt"],
-      [produits[i].imageUrl, produits[i].altTxt]
+      [productList[i].imageUrl, productList[i].altTxt]
     );
 
-    let nomProduit = newElement("h3", ["class"], ["productName"]);
+    let productName = newElement("h3", ["class"], ["productName"]);
 
-    let descriptionProduit = newElement("p", ["class"], ["produitDescription"]);
+    let productDescription = newElement("p", ["class"], ["produitDescription"]);
 
-    nomProduit.textContent = produits[i].name;
-    descriptionProduit.textContent = produits[i].description;
+    productName.textContent = productList[i].name;
+    productDescription.textContent = productList[i].description;
 
-    blocArticles.appendChild(lienCanape);
-    lienCanape.appendChild(canape);
-    canape.appendChild(imageProduit);
-    canape.appendChild(nomProduit);
-    canape.appendChild(descriptionProduit);
+    itemsTag.appendChild(productLink);
+    productLink.appendChild(productArticle);
+    productArticle.appendChild(productImage);
+    productArticle.appendChild(productName);
+    productArticle.appendChild(productDescription);
   }
 }
 
-displayProduits();
+displayProducts();

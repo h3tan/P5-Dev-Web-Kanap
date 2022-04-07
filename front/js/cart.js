@@ -28,7 +28,7 @@ function displayEmptyCart(tag) {
 
 /**
  * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
- * @param {String} element
+ * @param {String} tag
  * @param {Array} attribut : Array of String
  * @param {Array} attributName : Array of String
  * Taille de attribut et attributName doivent être égales
@@ -61,7 +61,7 @@ function getTotalQuantity(cart) {
 
 /**
  * Retourne une liste d'ID des produits présents dans le panier
- * @returns {Array of String}
+ * @returns {String[]}
  */
 function getProductsIdFromCart() {
   let cart = JSON.parse(localStorage.getItem("cart"));
@@ -125,6 +125,7 @@ function searchProductInList(index, list) {
  * @param {Array} productList
  */
 async function displayCart(productList) {
+  // Vérifie si le panier est vide, affiche que le panier est vide dans la page lorsque c'est le cas
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
@@ -133,7 +134,7 @@ async function displayCart(productList) {
     for (let i in cart) {
       productFound = searchProductInList(cart[i].id, productList);
       if (productFound != false) {
-        // <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
+        // Création de l'élément: <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
         let newArticle = createTag(
           "article",
           ["class", "data-id", "data-color"],
@@ -264,10 +265,12 @@ function updateQuantity() {
 // Supprime un produit du panier
 function deleteProduct() {
   let deleteButtons = document.querySelectorAll(".deleteItem");
+  // Parcours de tous les boutons de suppression
   deleteButtons.forEach(async (deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
     let product = await getSingleProductFromAPI(productToDeleteTag.dataset.id);
     let unitPrice = product.price;
+    // Gestion des évènements au clic sur le bouton "Supprimer"
     deleteTag.addEventListener("click", (event) => {
       let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);

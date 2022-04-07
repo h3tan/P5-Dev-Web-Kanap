@@ -1,13 +1,14 @@
 /**
  * Ajoute les balises <option> avec les valeurs passées en paramètres
- * @param {Array} options
+ * @param {String}
+ * @param {String[]} options
  */
- function setOptions(id, optionsList) {
+ function setOptions(idTag, optionsList) {
    for (let option of optionsList) {
      let optionTag = document.createElement("option");
      optionTag.setAttribute("value", option);
      optionTag.textContent = option;
-     document.getElementById(id).appendChild(optionTag);
+     document.getElementById(idTag).appendChild(optionTag);
    }
  }
 
@@ -28,7 +29,7 @@
   * Retourne les informations d'un produit à partir de son clic sur la page d'accueil
   * @returns
   */
- async function getProductById() {
+ async function getProductByIdFromAPI() {
    id = getIdFromUrl();
    let response = await fetch(`http://localhost:3000/api/products/${id}`);
    if (!response.ok) {
@@ -45,7 +46,7 @@
   * Retourne un tableau contenant l'id, la quantité et les couleurs du produit souhaité
   * Retourne 0 si l'une des deux conditions n'est pas satisfaite
   * @param {String} id
-  * @param {String} quantity
+  * @param {Number} quantity
   * @param {String} colors
   * @returns
   */
@@ -61,7 +62,7 @@
  /**
   * Cherche si le produit (product) est déjà dans le panier (cart) (couple id et couleurs identiques)
   * Si oui, met à jour la quantité du produit déjà dans le panier avec la quantité du produit ajouté
-  * @param {Object} cart
+  * @param {Object[]} cart
   * @param {Object} product
   * @returns
   */
@@ -81,20 +82,20 @@
    return false;
  }
 
-/**
- * Permet de trier un tableau d'objet en les regroupant par ID
- * A appeler avec la méthode "sort()" des tableaux
- * @param {Object} productA
- * @param {Object} productB
- * @returns
- */
+ /**
+  * Permet de trier un tableau d'objet en les regroupant par ID
+  * A appeler avec la méthode "sort()" des tableaux
+  * @param {Object} productA
+  * @param {Object} productB
+  * @returns
+  */
  function sortById(productA, productB) {
-  if (productA.id > productB.id) {
-    return -1;
-  } else {
-    return 1;
-  }
-}
+   if (productA.id > productB.id) {
+     return -1;
+   } else {
+     return 1;
+   }
+ }
 
  /**
   * Gère la redirection vers la page Panier en fonction du type d'ajout (mise à jour de la quantité ou ajout du produit)
@@ -121,26 +122,30 @@
  function updateStorage(id) {
    let colorsTag = document.getElementById("colors");
    let quantityTag = document.getElementById("quantity");
+   let cart = JSON.parse(localStorage.getItem("cart"));
    let product = verifyQuantityAndColors(
      id,
      quantityTag.value,
      colorsTag.value
    );
-   let cart = JSON.parse(localStorage.getItem("cart"));
+   // Vérifie que l'utilisateur a choisi une couleur et une quantité
    if (product == false) {
      alert("Veuillez choisir une quantité et une couleur");
      return;
    }
+   // Si le panier est vide, met le produit dans le panier
    if (localStorage.length == 0) {
      localStorage.setItem("cart", `[${JSON.stringify(product)}]`);
      goToCartPage(false);
      return;
    }
+   // Appel de la fonction de recherche du produit dans le panier et mise à jour du panier avec la quantité si c'est le cas
    if (searchProductInCart(cart, product)) {
      localStorage.setItem("cart", JSON.stringify(cart));
      goToCartPage(true);
      return;
    }
+   // Ajoute le produit dans le panier s'il n'était pas déjà présent et que le panier est non vide
    cart.push(product);
    cart.sort(sortById);
    localStorage.setItem("cart", JSON.stringify(cart));
@@ -151,7 +156,7 @@
   * Construit les éléments nécessaires à l'affiche des informations du produit
   */
  async function displayProductById() {
-   let product = await getProductById();
+   let product = await getProductByIdFromAPI();
    let imageProduct = document.createElement("img");
    imageProduct.setAttribute("src", product.imageUrl);
    imageProduct.setAttribute("alt", product.altTxt);
