@@ -247,12 +247,12 @@ function updateQuantity() {
           productToModifyTag.dataset.id == cart[i].id &&
           productToModifyTag.dataset.color == cart[i].colors
         ) {
-          if (cart[i].quantity < Number(event.target.value)) {
+          if (cart[i].quantity < parseInt(event.target.value)) {
             totalPrice = totalPrice + unitPrice;
           } else {
             totalPrice = totalPrice - unitPrice;
           }
-          cart[i].quantity = event.target.value;
+          cart[i].quantity = parseInt(event.target.value);
           displayTotalQuantity.textContent = getTotalQuantity(cart);
           displayTotalPrice.textContent = totalPrice;
           localStorage.setItem("cart", JSON.stringify(cart));
