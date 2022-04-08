@@ -66,12 +66,10 @@ function verifyQuantityAndColors(id, quantity, colors) {
  * @returns
  */
 function searchProductInCart(product, cart) {
-  for (let i in cart) {
-    if (product.id == cart[i].id && product.colors == cart[i].colors) {
-      return cart[i];
-    }
-  }
-  return false;
+  return cart.find(
+    (cartProduct) =>
+      product.id == cartProduct.id && product.colors == cartProduct.colors
+  );
 }
 
 /**
@@ -120,7 +118,7 @@ function updateStorage(id) {
   }
   // Appel de la fonction de recherche du produit dans le panier et mise à jour du panier avec la quantité si c'est le cas
   let searchOfArticle = searchProductInCart(product, cart);
-  if (searchOfArticle != false) {
+  if (searchOfArticle != undefined) {
     searchOfArticle.quantity = searchOfArticle.quantity + product.quantity;
     localStorage.setItem("cart", JSON.stringify(cart));
     goToCartPage(true);
