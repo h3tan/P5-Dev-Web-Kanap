@@ -235,6 +235,94 @@ Code postal: Doit être composé de 5 chiffres
     
 
     
+    <h4 class="name" id="cartPage"><span class="type-signature">(async) </span>cartPage<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Gère la page "Panier"
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line439">line 439</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="checkInformations"><span class="type-signature"></span>checkInformations<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
 
@@ -287,7 +375,7 @@ Code postal: Doit être composé de 5 chiffres
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line337">line 337</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -341,7 +429,7 @@ Code postal: Doit être composé de 5 chiffres
     
 
     
-    <h4 class="name" id="createTag"><span class="type-signature"></span>createTag<span class="signature">(tag, attribut, attributName)</span><span class="type-signature"> &rarr; {HTMLElement}</span></h4>
+    <h4 class="name" id="createTag"><span class="type-signature"></span>createTag<span class="signature">(tag, attribut<span class="signature-attributes">opt</span>, attributName<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {HTMLElement}</span></h4>
     
 
     
@@ -373,6 +461,8 @@ Code postal: Doit être composé de 5 chiffres
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -398,6 +488,14 @@ Code postal: Doit être composé de 5 chiffres
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -421,6 +519,16 @@ Code postal: Doit être composé de 5 chiffres
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -443,6 +551,16 @@ Code postal: Doit être composé de 5 chiffres
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -602,7 +720,102 @@ Code postal: Doit être composé de 5 chiffres
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>quantity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -643,7 +856,7 @@ Code postal: Doit être composé de 5 chiffres
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line264">line 264</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line277">line 277</a>
     </li></ul></dd>
     
 
@@ -740,7 +953,102 @@ de récupérer les informations manquantes aux produits du panier
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>quantity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -763,7 +1071,56 @@ de récupérer les informations manquantes aux produits du panier
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -804,7 +1161,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line128">line 128</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line135">line 135</a>
     </li></ul></dd>
     
 
@@ -985,7 +1342,7 @@ de récupérer les informations manquantes aux produits du panier
 
 
 <div class="description">
-    Construit les éléments HTML en récupérant les informations à partir de l'ID du produit dans l'url de la
+    Construit les éléments HTML en récupérant les informations à partir de l'ID du produit dans l'url de la page
 </div>
 
 
@@ -1029,7 +1386,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line136">line 136</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -1153,7 +1510,7 @@ de récupérer les informations manquantes aux produits du panier
     
 
     
-    <h4 class="name" id="getAllProductsFromAPI"><span class="type-signature">(async) </span>getAllProductsFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+    <h4 class="name" id="getAllProductsFromAPI"><span class="type-signature">(async) </span>getAllProductsFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1205,7 +1562,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line78">line 78</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line80">line 80</a>
     </li></ul></dd>
     
 
@@ -1241,7 +1598,7 @@ de récupérer les informations manquantes aux produits du panier
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;Object></span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1259,7 +1616,7 @@ de récupérer les informations manquantes aux produits du panier
     
 
     
-    <h4 class="name" id="getAllProductsFromAPI"><span class="type-signature">(async) </span>getAllProductsFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getAllProductsFromAPI"><span class="type-signature">(async) </span>getAllProductsFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1347,7 +1704,7 @@ de récupérer les informations manquantes aux produits du panier
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1417,7 +1774,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line322">line 322</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line335">line 335</a>
     </li></ul></dd>
     
 
@@ -1577,7 +1934,7 @@ de récupérer les informations manquantes aux produits du panier
     
 
     
-    <h4 class="name" id="getProductByIdFromAPI"><span class="type-signature">(async) </span>getProductByIdFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="getProductByIdFromAPI"><span class="type-signature">(async) </span>getProductByIdFromAPI<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1629,7 +1986,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line32">line 32</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line33">line 33</a>
     </li></ul></dd>
     
 
@@ -1665,7 +2022,7 @@ de récupérer les informations manquantes aux produits du panier
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1683,7 +2040,7 @@ de récupérer les informations manquantes aux produits du panier
     
 
     
-    <h4 class="name" id="getProductFromAPI"><span class="type-signature">(async) </span>getProductFromAPI<span class="signature">(id)</span><span class="type-signature"> &rarr; {Array.&lt;Object>}</span></h4>
+    <h4 class="name" id="getProductFromAPI"><span class="type-signature">(async) </span>getProductFromAPI<span class="signature">(id)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1784,7 +2141,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line95">line 95</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line97">line 97</a>
     </li></ul></dd>
     
 
@@ -1820,7 +2177,7 @@ de récupérer les informations manquantes aux produits du panier
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;Object></span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -1888,7 +2245,49 @@ de récupérer les informations manquantes aux produits du panier
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
 
 
             
@@ -1899,6 +2298,13 @@ de récupérer les informations manquantes aux produits du panier
             
 
             <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -1939,7 +2345,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line67">line 67</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line69">line 69</a>
     </li></ul></dd>
     
 
@@ -2053,7 +2459,56 @@ de récupérer les informations manquantes aux produits du panier
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>quantity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2094,7 +2549,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line54">line 54</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -2249,7 +2704,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line79">line 79</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line82">line 82</a>
     </li></ul></dd>
     
 
@@ -2432,7 +2887,7 @@ de récupérer les informations manquantes aux produits du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line305">line 305</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line318">line 318</a>
     </li></ul></dd>
     
 
@@ -2669,7 +3124,7 @@ de récupérer les informations manquantes aux produits du panier
     
 
     
-    <h4 class="name" id="orderProductFromCart"><span class="type-signature"></span>orderProductFromCart<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="orderProductFromCart"><span class="type-signature">(async) </span>orderProductFromCart<span class="signature">(cart)</span><span class="type-signature"></span></h4>
     
 
     
@@ -2688,6 +3143,104 @@ ainsi réaliser la commande du panier
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cart</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -2723,7 +3276,7 @@ ainsi réaliser la commande du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line395">line 395</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line414">line 414</a>
     </li></ul></dd>
     
 
@@ -2811,7 +3364,7 @@ ainsi réaliser la commande du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line155">line 155</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -2907,7 +3460,79 @@ ainsi réaliser la commande du panier
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -2971,7 +3596,7 @@ ainsi réaliser la commande du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line68">line 68</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line71">line 71</a>
     </li></ul></dd>
     
 
@@ -3108,7 +3733,56 @@ ainsi réaliser la commande du panier
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>_id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -3149,7 +3823,7 @@ ainsi réaliser la commande du panier
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line113">line 113</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -3206,7 +3880,7 @@ ainsi réaliser la commande du panier
     
 
     
-    <h4 class="name" id="sendInformations"><span class="type-signature">(async) </span>sendInformations<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="sendInformations"><span class="type-signature">(async) </span>sendInformations<span class="signature">(cart)</span><span class="type-signature"></span></h4>
     
 
     
@@ -3224,6 +3898,104 @@ La réponse de l'API permet de récupérer le numéro de commande pour la page d
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cart</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -3259,7 +4031,7 @@ La réponse de l'API permet de récupérer le numéro de commande pour la page d
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line358">line 358</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line374">line 374</a>
     </li></ul></dd>
     
 
@@ -3515,7 +4287,102 @@ La réponse de l'API permet de récupérer le numéro de commande pour la page d
 
             
 
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
             <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>quantity</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colors</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -3556,7 +4423,7 @@ La réponse de l'API permet de récupérer le numéro de commande pour la page d
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line232">line 232</a>
+        <a href="cart.js.html">cart.js</a>, <a href="cart.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -3693,7 +4560,7 @@ La réponse de l'API permet de récupérer le numéro de commande pour la page d
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line97">line 97</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line100">line 100</a>
     </li></ul></dd>
     
 
@@ -3896,7 +4763,7 @@ Retourne 0 si l'une des deux conditions n'est pas satisfaite
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="product.js.html">product.js</a>, <a href="product.js.html#line53">line 53</a>
+        <a href="product.js.html">product.js</a>, <a href="product.js.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -3960,13 +4827,13 @@ Retourne 0 si l'une des deux conditions n'est pas satisfaite
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addressRegex">addressRegex</a></li><li><a href="global.html#checkInformations">checkInformations</a></li><li><a href="global.html#createTag">createTag</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#displayCart">displayCart</a></li><li><a href="global.html#displayEmptyCart">displayEmptyCart</a></li><li><a href="global.html#displayProductById">displayProductById</a></li><li><a href="global.html#displayProducts">displayProducts</a></li><li><a href="global.html#emailRegex">emailRegex</a></li><li><a href="global.html#getAllProductsFromAPI">getAllProductsFromAPI</a></li><li><a href="global.html#getCustomerInformations">getCustomerInformations</a></li><li><a href="global.html#getIdFromUrl">getIdFromUrl</a></li><li><a href="global.html#getProductByIdFromAPI">getProductByIdFromAPI</a></li><li><a href="global.html#getProductFromAPI">getProductFromAPI</a></li><li><a href="global.html#getProductsIdFromCart">getProductsIdFromCart</a></li><li><a href="global.html#getTotalQuantityOfCart">getTotalQuantityOfCart</a></li><li><a href="global.html#goToCartPage">goToCartPage</a></li><li><a href="global.html#inputCheck">inputCheck</a></li><li><a href="global.html#newElement">newElement</a></li><li><a href="global.html#orderProductFromCart">orderProductFromCart</a></li><li><a href="global.html#productPage">productPage</a></li><li><a href="global.html#searchProductInCart">searchProductInCart</a></li><li><a href="global.html#searchProductInList">searchProductInList</a></li><li><a href="global.html#sendInformations">sendInformations</a></li><li><a href="global.html#setOptions">setOptions</a></li><li><a href="global.html#updateQuantity">updateQuantity</a></li><li><a href="global.html#updateStorage">updateStorage</a></li><li><a href="global.html#verifyQuantityAndColors">verifyQuantityAndColors</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addressRegex">addressRegex</a></li><li><a href="global.html#cartPage">cartPage</a></li><li><a href="global.html#checkInformations">checkInformations</a></li><li><a href="global.html#createTag">createTag</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#displayCart">displayCart</a></li><li><a href="global.html#displayEmptyCart">displayEmptyCart</a></li><li><a href="global.html#displayProductById">displayProductById</a></li><li><a href="global.html#displayProducts">displayProducts</a></li><li><a href="global.html#emailRegex">emailRegex</a></li><li><a href="global.html#getAllProductsFromAPI">getAllProductsFromAPI</a></li><li><a href="global.html#getCustomerInformations">getCustomerInformations</a></li><li><a href="global.html#getIdFromUrl">getIdFromUrl</a></li><li><a href="global.html#getProductByIdFromAPI">getProductByIdFromAPI</a></li><li><a href="global.html#getProductFromAPI">getProductFromAPI</a></li><li><a href="global.html#getProductsIdFromCart">getProductsIdFromCart</a></li><li><a href="global.html#getTotalQuantityOfCart">getTotalQuantityOfCart</a></li><li><a href="global.html#goToCartPage">goToCartPage</a></li><li><a href="global.html#inputCheck">inputCheck</a></li><li><a href="global.html#newElement">newElement</a></li><li><a href="global.html#orderProductFromCart">orderProductFromCart</a></li><li><a href="global.html#productPage">productPage</a></li><li><a href="global.html#searchProductInCart">searchProductInCart</a></li><li><a href="global.html#searchProductInList">searchProductInList</a></li><li><a href="global.html#sendInformations">sendInformations</a></li><li><a href="global.html#setOptions">setOptions</a></li><li><a href="global.html#updateQuantity">updateQuantity</a></li><li><a href="global.html#updateStorage">updateStorage</a></li><li><a href="global.html#verifyQuantityAndColors">verifyQuantityAndColors</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Apr 11 2022 16:22:51 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Apr 11 2022 19:47:44 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

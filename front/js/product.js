@@ -27,7 +27,8 @@ function getIdFromUrl() {
 
 /**
  * Retourne les informations d'un produit à partir de son clic sur la page d'accueil
- * @returns {Object}
+ * @async
+ * @returns {Promise<Object>}
  */
 async function getProductByIdFromAPI() {
   id = getIdFromUrl();
@@ -62,6 +63,8 @@ function verifyQuantityAndColors(id, quantity, colors) {
 /**
  * Cherche si le produit (product) est déjà dans le panier (cart) (couple id et couleurs identiques)
  * @param {Object} product
+ * @param {String} product.id
+ * @param {String} product.colors
  * @param {Object[]} cart
  * @returns {Object}
  */
@@ -131,7 +134,8 @@ function updateStorage(id) {
 }
 
 /**
- * Construit les éléments HTML en récupérant les informations à partir de l'ID du produit dans l'url de la
+ * Construit les éléments HTML en récupérant les informations à partir de l'ID du produit dans l'url de la page
+ * @async
  */
 async function displayProductById() {
   let product = await getProductByIdFromAPI();
@@ -151,6 +155,7 @@ async function displayProductById() {
 
 /**
  * Affiche les informations du produit et permet l'ajout du produit au panier
+ * @async
  */
 async function productPage() {
   await displayProductById();

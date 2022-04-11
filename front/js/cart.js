@@ -8,7 +8,7 @@ const noNumberRegex = /^[A-Z]([^0-9\_])*$/;
  * Nom de la rue: seuls les chiffres, caractères (majuscules et minuscules), espace et tiret sont autorisés
  * Code postal: Doit être composé de 5 chiffres
  */
-const addressRegex = /^([0-9]|[0-9][0-9]|1[0-9][0-9]) ([^0-9\_])+ ([0-9]{5})+$/;
+const addressRegex = /^1?\d{1,2} ([^0-9\_])+ (\d{5})+$/;
 /**
  * Doit être de la forme "expression@nomdedomaine.com"
  */
@@ -17,8 +17,8 @@ const emailRegex = /^[\w\-\.]+@[\w\-\.]+\.[a-z]{2,3}$/;
 /**
  * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
  * @param {String} tag
- * @param {String[]} attribut
- * @param {String[]} attributName
+ * @param {String[]} [attribut]
+ * @param {String[]} [attributName]
  * Taille de attribut et attributName doivent être égales
  * @returns {HTMLElement}
  */
@@ -49,6 +49,7 @@ function displayEmptyCart(tag) {
 /**
  * Calcule la quantité totale des articles du panier
  * @param {Object[]} cart
+ * @param {Number} cart[].quantity
  * @returns {Number}
  */
 function getTotalQuantityOfCart(cart) {
@@ -61,7 +62,8 @@ function getTotalQuantityOfCart(cart) {
 
 /**
  * Retourne une liste d'ID des produits présents dans le panier
- * @param {Object} cart
+ * @param {Object[]} cart
+ * @param {String} cart[].id
  * @returns {String[]}
  */
 function getProductsIdFromCart(cart) {
@@ -73,7 +75,7 @@ function getProductsIdFromCart(cart) {
 
 /**
  * Récupère la liste des produits
- * @returns {Object[]}
+ * @returns {Promise<Object>}
  */
 async function getAllProductsFromAPI() {
   let response = await fetch(`http://localhost:3000/api/products/`);
@@ -90,7 +92,7 @@ async function getAllProductsFromAPI() {
 /**
  * Récupère un produit dans l'API à partir de son id
  * @param {String} id
- * @returns {Object[]}
+ * @returns {Promise<Object>}
  */
 async function getProductFromAPI(id) {
   let response = await fetch(`http://localhost:3000/api/products/${id}`);
@@ -108,6 +110,7 @@ async function getProductFromAPI(id) {
  * Cherche l'élément index dans list
  * @param {String} index
  * @param {Object[]} list
+ * @param {String} list[]._id
  * @returns {Object | Boolean}
  */
 function searchProductInList(index, list) {
@@ -123,7 +126,11 @@ function searchProductInList(index, list) {
  * Construit les éléments nécessaires pour afficher le panier, liste de tous les produits en paramètre afin
  * de récupérer les informations manquantes aux produits du panier
  * @param {Object[]} cart
+ * @param {String} cart[].id
+ * @param {Number} cart[].quantity
+ * @param {String} cart[].colors
  * @param {Object[]} productList
+ * @param {String} productList._id
  */
 async function displayCart(cart, productList) {
   // Vérifie si le panier est vide, affiche que le panier est vide dans la page lorsque c'est le cas
@@ -228,6 +235,9 @@ async function displayCart(cart, productList) {
 
 /** Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
  * @param {Object[]} cart
+ * @param {String} cart[].id
+ * @param {Number} cart[].quantity
+ * @param {String} cart[].colors
  */
 function updateQuantity(cart) {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
@@ -260,6 +270,9 @@ function updateQuantity(cart) {
 
 /** Supprime un produit du panier
  * @param {Object[]} cart
+ * @param {String} cart[].id
+ * @param {Number} cart[].quantity
+ * @param {String} cart[].colors
  */
 function deleteProduct(cart) {
   let deleteButtons = document.querySelectorAll(".deleteItem");
@@ -354,7 +367,10 @@ function checkInformations() {
 /**
  * Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
  * La réponse de l'API permet de récupérer le numéro de commande pour la page de confirmation
- * */
+ * @async
+ * @param {Object[]}
+ * @param {String} cart[].id
+ */
 async function sendInformations(cart) {
   let products = getProductsIdFromCart(cart);
   console.log(products);
@@ -391,6 +407,9 @@ async function sendInformations(cart) {
  * Lorsque toutes les informations entrées par l'utilisateur sont correctes,
  * appelle la fonction sendInformations pour envoyer les informations vers l'API et
  * ainsi réaliser la commande du panier
+ * @async
+ * @param {Object[]}
+ * @param {String} cart[].id
  */
 function orderProductFromCart(cart) {
   let orderButton = document.getElementById("order");
@@ -413,7 +432,10 @@ function orderProductFromCart(cart) {
   });
 }
 
-// Gère la page Panier
+/**
+ * Gère la page "Panier"
+ * @async
+ */
 async function cartPage() {
   let cart = JSON.parse(localStorage.getItem("cart"));
   productsList = await getAllProductsFromAPI();
