@@ -1,7 +1,7 @@
-let cartTag = document.getElementById("cart__items");
-let displayTotalQuantity = document.getElementById("totalQuantity");
-let displayTotalPrice = document.getElementById("totalPrice");
-// Pas de chiffres dans les noms
+const cartTag = document.getElementById("cart__items");
+const displayTotalQuantity = document.getElementById("totalQuantity");
+const displayTotalPrice = document.getElementById("totalPrice");
+// Pas de chiffres dans les noms, doit commencer par une majuscule
 const noNumberRegex = /^[A-Z]([^0-9\_])*$/;
 /** Premier élément est un nombre suivie du nom de la rue et du code postal
  * Nombre: 1 ou 2 chiffres, si 3 chiffres, doit commencer par 1
@@ -15,22 +15,10 @@ const addressRegex = /^([0-9]|[0-9][0-9]|1[0-9][0-9]) ([^0-9\_])+ ([0-9]{5})+$/;
 const emailRegex = /^[\w\-\.]+@[\w\-\.]+\.[a-z]{2,3}$/;
 
 /**
- * Affiche le panier vide dans la page panier
- * @param {HTMLElement} tag
- */
-function displayEmptyCart(tag) {
-  let afficheEmptyCart = createTag("h2");
-  afficheEmptyCart.style.textAlign = "center";
-  afficheEmptyCart.textContent = "Panier Vide!";
-  tag.appendChild(afficheEmptyCart);
-  return 0;
-}
-
-/**
  * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
  * @param {String} tag
- * @param {Array} attribut : Array of String
- * @param {Array} attributName : Array of String
+ * @param {String[]} attribut
+ * @param {String[]} attributName
  * Taille de attribut et attributName doivent être égales
  * @returns {HTMLElement}
  */
@@ -47,11 +35,23 @@ function createTag(tag, attribute, attributeName) {
 }
 
 /**
+ * Affiche un message sur la page informant que le panier est vide
+ * @param {HTMLElement} tag
+ */
+function displayEmptyCart(tag) {
+  let afficheEmptyCart = createTag("h2");
+  afficheEmptyCart.style.textAlign = "center";
+  afficheEmptyCart.textContent = "Panier Vide!";
+  tag.appendChild(afficheEmptyCart);
+  return 0;
+}
+
+/**
  * Calcule la quantité totale des articles du panier
- * @param {Array} cart
+ * @param {Object[]} cart
  * @returns {Number}
  */
-function getTotalQuantity(cart) {
+function getTotalQuantityOfCart(cart) {
   let totalQuantity = 0;
   for (let i in cart) {
     totalQuantity += Number(cart[i].quantity);
@@ -61,10 +61,10 @@ function getTotalQuantity(cart) {
 
 /**
  * Retourne une liste d'ID des produits présents dans le panier
+ * @param {Object} cart
  * @returns {String[]}
  */
-function getProductsIdFromCart() {
-  let cart = JSON.parse(localStorage.getItem("cart"));
+function getProductsIdFromCart(cart) {
   for (let i in cart) {
     cart[i] = cart[i].id;
   }
@@ -73,9 +73,9 @@ function getProductsIdFromCart() {
 
 /**
  * Récupère la liste des produits
- * @returns
+ * @returns {Object[]}
  */
-async function getProductsFromAPI() {
+async function getAllProductsFromAPI() {
   let response = await fetch(`http://localhost:3000/api/products/`);
   if (!response.ok) {
     cartTag.textContent =
@@ -90,9 +90,9 @@ async function getProductsFromAPI() {
 /**
  * Récupère un produit dans l'API à partir de son id
  * @param {String} id
- * @returns
+ * @returns {Object[]}
  */
-async function getSingleProductFromAPI(id) {
+async function getProductFromAPI(id) {
   let response = await fetch(`http://localhost:3000/api/products/${id}`);
   if (!response.ok) {
     cartTag.textContent =
@@ -107,7 +107,7 @@ async function getSingleProductFromAPI(id) {
 /**
  * Cherche l'élément index dans list
  * @param {String} index
- * @param {Object} list
+ * @param {Object[]} list
  * @returns
  */
 function searchProductInList(index, list) {
@@ -122,16 +122,17 @@ function searchProductInList(index, list) {
 /**
  * Construit les éléments nécessaires pour afficher le panier, liste de tous les produits en paramètre afin
  * de récupérer les informations manquantes aux produits du panier
- * @param {Array} productList
+ * @param {Object[]} cart
+ * @param {Object[]} productList
  */
-async function displayCart(productList) {
+async function displayCart(cart, productList) {
   // Vérifie si le panier est vide, affiche que le panier est vide dans la page lorsque c'est le cas
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
-    let cart = JSON.parse(localStorage.getItem("cart"));
     let totalPrice = 0;
     for (let i in cart) {
+      // Cherche le produit du panier dans la liste de l'API pour retrouver les informations manquantes comme le prix
       productFound = searchProductInList(cart[i].id, productList);
       if (productFound != false) {
         // Création de l'élément: <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
@@ -140,80 +141,73 @@ async function displayCart(productList) {
           ["class", "data-id", "data-color"],
           ["cart__item", cart[i].id, cart[i].colors]
         );
-        // <div class="cart__item__img"></div>
+        // Création de l'élément <div class="cart__item__img"></div>
         let imgContainer = createTag("div", ["class"], ["cart__item__img"]);
-        // <img src="chemin de l'image" alt="texte alternatif" />
+        // Création de l'élément <img src="chemin de l'image" alt="texte alternatif" />
         let imgTag = createTag(
           "img",
           ["src", "alt"],
           [productFound.imageUrl, productFound.altTxt]
         );
-        // <div class="cart__item__content"></div>
+        // Création de l'élément <div class="cart__item__content"></div>
         let productContent = createTag(
           "div",
           ["class"],
           ["cart__item__content"]
         );
-        // <div class="cart__item__content__description"></div>
+        // Création de l'élément <div class="cart__item__content__description"></div>
         let descriptionTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__description"]
         );
-        // <h2>Nom du produit</h2>
+        // Création de l'élément <h2>Nom du produit</h2>
         let productNameTag = createTag("h2");
         productNameTag.textContent = productFound.name;
-        // <p>Couleurs choisies</p>
+        // Création de l'élément <p>Couleurs choisies</p>
         let productColorsTag = createTag("p");
         productColorsTag.textContent = cart[i].colors;
-        // <p>Prix du produit</p>
+        // Création de l'élément <p>Prix du produit</p>
         let productPriceTag = createTag("p");
         productPriceTag.textContent = productFound.price + " €";
-        /**
-         * <div class="cart__item">
-         *    <div class="cart__item__content__description">
-         *      <h2></h2>
-         *      <p></p>
-         *    </div>
-         * </div>
-         */
+        //Association des éléments pour la description du produit
         descriptionTag.appendChild(productNameTag);
         descriptionTag.appendChild(productColorsTag);
         descriptionTag.appendChild(productPriceTag);
         productContent.appendChild(descriptionTag);
-        // <div class="cart__item__content__settings"></div>
+        // Création de l'élément <div class="cart__item__content__settings"></div>
         let settingsTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings"]
         );
-        // <div class="cart__item__content__settings__quantity"></div>
+        // Création de l'élément <div class="cart__item__content__settings__quantity"></div>
         let settingsQuantity = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__quantity"]
         );
-        // <p>Qté: </p>
+        // Création de l'élément <p>Qté: </p>
         let quantityTag = createTag("p");
         quantityTag.innerText = `Qté:`;
-        // <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
+        // Création de l'élément <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
         let quantityInput = createTag(
           "input",
           ["type", "class", "name", "min", "max", "value"],
           ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i].quantity]
         );
-        // <div class="cart__item__content__settings__delete">
+        // Création de l'élément <div class="cart__item__content__settings__delete">
         let deleteContainer = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__delete"]
         );
-        // <div class="deleteItem"></div>
+        // Création de l'élément <div class="deleteItem"></div>
         let deleteButton = createTag("div", ["class"], ["deleteItem"]);
         deleteButton.style.cursor = "pointer";
         deleteButton.textContent = "Supprimer";
         deleteContainer.appendChild(deleteButton);
-        //Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
+        // Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
         settingsQuantity.appendChild(quantityTag);
         settingsQuantity.appendChild(quantityInput);
         settingsTag.appendChild(settingsQuantity);
@@ -223,24 +217,26 @@ async function displayCart(productList) {
         newArticle.appendChild(imgContainer);
         newArticle.appendChild(productContent);
         cartTag.appendChild(newArticle);
-        //Affichage de la quantité totale et du prix total du panier au chargement de la page
+        // Affichage de la quantité totale et du prix total du panier au chargement de la page
         totalPrice = totalPrice + cart[i].quantity * productFound.price;
         displayTotalPrice.textContent = totalPrice;
-        displayTotalQuantity.textContent = getTotalQuantity(cart);
+        displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
       }
     }
   }
 }
 
-//Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
-function updateQuantity() {
+/**Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
+ * @param {Object[]} cart
+ */
+function updateQuantity(cart) {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
   inputsQuantity.forEach(async (inputTag) => {
     let productToModifyTag = inputTag.closest("article");
-    let product = await getSingleProductFromAPI(productToModifyTag.dataset.id);
+    let product = await getProductFromAPI(productToModifyTag.dataset.id);
     let unitPrice = product.price;
+    // Gestion de l'évènement "input" lorsqu'on change la quantité
     inputTag.addEventListener("input", (event) => {
-      let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
@@ -253,7 +249,7 @@ function updateQuantity() {
             totalPrice = totalPrice - unitPrice;
           }
           cart[i].quantity = parseInt(event.target.value);
-          displayTotalQuantity.textContent = getTotalQuantity(cart);
+          displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
           displayTotalPrice.textContent = totalPrice;
           localStorage.setItem("cart", JSON.stringify(cart));
         }
@@ -262,17 +258,18 @@ function updateQuantity() {
   });
 }
 
-// Supprime un produit du panier
-function deleteProduct() {
+/** Supprime un produit du panier
+ * @param {Object[]} cart
+ */
+function deleteProduct(cart) {
   let deleteButtons = document.querySelectorAll(".deleteItem");
   // Parcours de tous les boutons de suppression
   deleteButtons.forEach(async (deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
-    let product = await getSingleProductFromAPI(productToDeleteTag.dataset.id);
+    let product = await getProductFromAPI(productToDeleteTag.dataset.id);
     let unitPrice = product.price;
-    // Gestion des évènements au clic sur le bouton "Supprimer"
+    // Gestion de l'évènement "click" au clic sur le bouton "Supprimer"
     deleteTag.addEventListener("click", (event) => {
-      let cart = JSON.parse(localStorage.getItem("cart"));
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
@@ -291,7 +288,7 @@ function deleteProduct() {
             displayTotalPrice.textContent = totalPrice;
             cart.splice(i, 1);
             localStorage.setItem("cart", JSON.stringify(cart));
-            displayTotalQuantity.textContent = getTotalQuantity(cart);
+            displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
           }
         }
       }
@@ -300,8 +297,8 @@ function deleteProduct() {
 }
 
 /**
- * Vérifie si le texte saisie dans tag est valide selon le regex donné en paramètre
- * @param {RegExp} regex
+ * Vérifie si le texte saisi au fur et à mesure par l'utilisateur dans "tag" est valide selon le regex donné en paramètre
+ * @param {*} regex
  * @param {HTMLElement} tag
  * @param {HTMLElement} tagError
  */
@@ -354,7 +351,10 @@ function checkInformations() {
   }
 }
 
-// Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
+/**
+ * Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
+ * La réponse de l'API permet de récupérer le numéro de commande pour la page de confirmation
+ * */
 async function sendInformations() {
   let products = getProductsIdFromCart();
   let orderInformationsJson = await fetch(
@@ -414,10 +414,11 @@ function orderProductFromCart() {
 
 // Gère la page Panier
 async function cartPage() {
-  productsList = await getProductsFromAPI();
-  displayCart(productsList);
-  deleteProduct();
-  updateQuantity();
+  let cart = JSON.parse(localStorage.getItem("cart"));
+  productsList = await getAllProductsFromAPI();
+  displayCart(cart, productsList);
+  deleteProduct(cart);
+  updateQuantity(cart);
   orderProductFromCart();
 }
 

@@ -1,8 +1,8 @@
 /**
- * Créé une balise <element>, si des attributs sont présents, implante ces attributs dans la balise
+ * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
  * @param {String} element
- * @param {String[]} attribut : Array of String
- * @param {String[]} attributName : Array of String
+ * @param {String[]} attribut
+ * @param {String[]} attributName
  * Taille de attribut et attributName doivent être égales
  * @returns {HTMLElement}
  */
@@ -19,7 +19,7 @@ function newElement(element, attribut, attributName) {
 }
 
 /**
- * Récupère la liste des produits
+ * Récupère la liste des produits de l'API
  * @returns
  */
 async function getAllProductsFromAPI() {
@@ -34,8 +34,7 @@ async function getAllProductsFromAPI() {
 }
 
 /**
- * Affiche les produits dans la page
- * @param {Object} products
+ * Crée les éléments HTML nécessaires en récupérant la liste des produits pour les afficher sur la page
  */
 async function displayProducts() {
   let itemsTag = document.getElementById("items");

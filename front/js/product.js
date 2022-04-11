@@ -1,6 +1,6 @@
 /**
  * Ajoute les balises <option> avec les valeurs passées en paramètres
- * @param {String}
+ * @param {String} idTag
  * @param {String[]} options
  */
 function setOptions(idTag, optionsList) {
@@ -14,7 +14,7 @@ function setOptions(idTag, optionsList) {
 
 /**
  * Retourne l'ID du produit contenu dans l'url de la page
- * @returns
+ * @returns {String}
  */
 function getIdFromUrl() {
   let url = new URL(document.location);
@@ -27,7 +27,7 @@ function getIdFromUrl() {
 
 /**
  * Retourne les informations d'un produit à partir de son clic sur la page d'accueil
- * @returns
+ * @returns {Object}
  */
 async function getProductByIdFromAPI() {
   id = getIdFromUrl();
@@ -43,12 +43,12 @@ async function getProductByIdFromAPI() {
 
 /**
  * Vérifie si la quantité est entre 0 et 300 et qu'une couleur a bien été sélectionnée
- * Retourne un tableau contenant l'id, la quantité et les couleurs du produit souhaité
+ * Retourne un objet contenant l'id, la quantité et les couleurs du produit souhaité
  * Retourne 0 si l'une des deux conditions n'est pas satisfaite
  * @param {String} id
  * @param {Number} quantity
  * @param {String} colors
- * @returns
+ * @returns {Object}
  */
 function verifyQuantityAndColors(id, quantity, colors) {
   if (quantity == 0 || quantity > 300 || colors == "") {
@@ -117,9 +117,9 @@ function updateStorage(id) {
     return;
   }
   // Appel de la fonction de recherche du produit dans le panier et mise à jour du panier avec la quantité si c'est le cas
-  let searchOfArticle = searchProductInCart(product, cart);
-  if (searchOfArticle != undefined) {
-    searchOfArticle.quantity = searchOfArticle.quantity + product.quantity;
+  let productFound = searchProductInCart(product, cart);
+  if (productFound != undefined) {
+    productFound.quantity = productFound.quantity + product.quantity;
     localStorage.setItem("cart", JSON.stringify(cart));
     goToCartPage(true);
     return;
@@ -131,17 +131,21 @@ function updateStorage(id) {
 }
 
 /**
- * Construit les éléments nécessaires à l'affiche des informations du produit
+ * Construit les éléments HTML en récupérant les informations à partir de l'ID du produit dans l'url de la
  */
 async function displayProductById() {
   let product = await getProductByIdFromAPI();
+
   let imageProduct = document.createElement("img");
   imageProduct.setAttribute("src", product.imageUrl);
   imageProduct.setAttribute("alt", product.altTxt);
+
   document.querySelector(".item__img").appendChild(imageProduct);
+
   document.getElementById("title").textContent = product.name;
   document.getElementById("price").textContent = product.price;
   document.getElementById("description").textContent = product.description;
+
   setOptions("colors", product.colors);
 }
 
