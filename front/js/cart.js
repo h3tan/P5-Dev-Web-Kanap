@@ -226,7 +226,7 @@ async function displayCart(cart, productList) {
   }
 }
 
-/**Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
+/** Met à jour la quantité du produit dans le panier ainsi que la quantité totale et le prix total sur la page
  * @param {Object[]} cart
  */
 function updateQuantity(cart) {
@@ -355,8 +355,9 @@ function checkInformations() {
  * Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
  * La réponse de l'API permet de récupérer le numéro de commande pour la page de confirmation
  * */
-async function sendInformations() {
-  let products = getProductsIdFromCart();
+async function sendInformations(cart) {
+  let products = getProductsIdFromCart(cart);
+  console.log(products);
   let orderInformationsJson = await fetch(
     "http://localhost:3000/api/products/order",
     {
@@ -391,7 +392,7 @@ async function sendInformations() {
  * appelle la fonction sendInformations pour envoyer les informations vers l'API et
  * ainsi réaliser la commande du panier
  */
-function orderProductFromCart() {
+function orderProductFromCart(cart) {
   let orderButton = document.getElementById("order");
   inputCheck(noNumberRegex, "firstName", "firstNameErrorMsg");
   inputCheck(noNumberRegex, "lastName", "lastNameErrorMsg");
@@ -405,7 +406,7 @@ function orderProductFromCart() {
       return;
     }
     if (checkInformations()) {
-      sendInformations();
+      sendInformations(cart);
     } else {
       alert("Veuillez vérifier vos informations");
     }
@@ -419,7 +420,7 @@ async function cartPage() {
   displayCart(cart, productsList);
   deleteProduct(cart);
   updateQuantity(cart);
-  orderProductFromCart();
+  orderProductFromCart(cart);
 }
 
 cartPage();
