@@ -20,7 +20,7 @@ function newElement(element, attribut, attributName) {
 
 /**
  * Récupère la liste des produits de l'API
- * @returns
+ * @returns {Object}
  */
 async function getAllProductsFromAPI() {
   let response = await fetch("http://localhost:3000/api/products/");

@@ -1,4 +1,32 @@
-const cartTag = document.getElementById("cart__items");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: cart.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: cart.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const cartTag = document.getElementById("cart__items");
 const displayTotalQuantity = document.getElementById("totalQuantity");
 const displayTotalPrice = document.getElementById("totalPrice");
 // Pas de chiffres dans les noms, doit commencer par une majuscule
@@ -15,7 +43,7 @@ const addressRegex = /^([0-9]|[0-9][0-9]|1[0-9][0-9]) ([^0-9\_])+ ([0-9]{5})+$/;
 const emailRegex = /^[\w\-\.]+@[\w\-\.]+\.[a-z]{2,3}$/;
 
 /**
- * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
+ * Créé une balise &lt;element>, si des attributs sont présents, implémente ces attributs dans la balise
  * @param {String} tag
  * @param {String[]} attribut
  * @param {String[]} attributName
@@ -24,7 +52,7 @@ const emailRegex = /^[\w\-\.]+@[\w\-\.]+\.[a-z]{2,3}$/;
  */
 function createTag(tag, attribute, attributeName) {
   let newTag = document.createElement(tag);
-  if (arguments.length < 2) {
+  if (arguments.length &lt; 2) {
     return newTag;
   } else {
     for (i in attributeName) {
@@ -135,39 +163,39 @@ async function displayCart(cart, productList) {
       // Cherche le produit du panier dans la liste de l'API pour retrouver les informations manquantes comme le prix
       productFound = searchProductInList(cart[i].id, productList);
       if (productFound != false) {
-        // Création de l'élément: <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
+        // Création de l'élément: &lt;article class="cart__item" data-id="id du produit" data-color="couleurs choisies">&lt;/article>
         let newArticle = createTag(
           "article",
           ["class", "data-id", "data-color"],
           ["cart__item", cart[i].id, cart[i].colors]
         );
-        // Création de l'élément <div class="cart__item__img"></div>
+        // Création de l'élément &lt;div class="cart__item__img">&lt;/div>
         let imgContainer = createTag("div", ["class"], ["cart__item__img"]);
-        // Création de l'élément <img src="chemin de l'image" alt="texte alternatif" />
+        // Création de l'élément &lt;img src="chemin de l'image" alt="texte alternatif" />
         let imgTag = createTag(
           "img",
           ["src", "alt"],
           [productFound.imageUrl, productFound.altTxt]
         );
-        // Création de l'élément <div class="cart__item__content"></div>
+        // Création de l'élément &lt;div class="cart__item__content">&lt;/div>
         let productContent = createTag(
           "div",
           ["class"],
           ["cart__item__content"]
         );
-        // Création de l'élément <div class="cart__item__content__description"></div>
+        // Création de l'élément &lt;div class="cart__item__content__description">&lt;/div>
         let descriptionTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__description"]
         );
-        // Création de l'élément <h2>Nom du produit</h2>
+        // Création de l'élément &lt;h2>Nom du produit&lt;/h2>
         let productNameTag = createTag("h2");
         productNameTag.textContent = productFound.name;
-        // Création de l'élément <p>Couleurs choisies</p>
+        // Création de l'élément &lt;p>Couleurs choisies&lt;/p>
         let productColorsTag = createTag("p");
         productColorsTag.textContent = cart[i].colors;
-        // Création de l'élément <p>Prix du produit</p>
+        // Création de l'élément &lt;p>Prix du produit&lt;/p>
         let productPriceTag = createTag("p");
         productPriceTag.textContent = productFound.price + " €";
         //Association des éléments pour la description du produit
@@ -175,34 +203,34 @@ async function displayCart(cart, productList) {
         descriptionTag.appendChild(productColorsTag);
         descriptionTag.appendChild(productPriceTag);
         productContent.appendChild(descriptionTag);
-        // Création de l'élément <div class="cart__item__content__settings"></div>
+        // Création de l'élément &lt;div class="cart__item__content__settings">&lt;/div>
         let settingsTag = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings"]
         );
-        // Création de l'élément <div class="cart__item__content__settings__quantity"></div>
+        // Création de l'élément &lt;div class="cart__item__content__settings__quantity">&lt;/div>
         let settingsQuantity = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__quantity"]
         );
-        // Création de l'élément <p>Qté: </p>
+        // Création de l'élément &lt;p>Qté: &lt;/p>
         let quantityTag = createTag("p");
         quantityTag.innerText = `Qté:`;
-        // Création de l'élément <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
+        // Création de l'élément &lt;input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
         let quantityInput = createTag(
           "input",
           ["type", "class", "name", "min", "max", "value"],
           ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i].quantity]
         );
-        // Création de l'élément <div class="cart__item__content__settings__delete">
+        // Création de l'élément &lt;div class="cart__item__content__settings__delete">
         let deleteContainer = createTag(
           "div",
           ["class"],
           ["cart__item__content__settings__delete"]
         );
-        // Création de l'élément <div class="deleteItem"></div>
+        // Création de l'élément &lt;div class="deleteItem">&lt;/div>
         let deleteButton = createTag("div", ["class"], ["deleteItem"]);
         deleteButton.style.cursor = "pointer";
         deleteButton.textContent = "Supprimer";
@@ -240,10 +268,10 @@ function updateQuantity(cart) {
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
-          productToModifyTag.dataset.id == cart[i].id &&
+          productToModifyTag.dataset.id == cart[i].id &amp;&amp;
           productToModifyTag.dataset.color == cart[i].colors
         ) {
-          if (cart[i].quantity < parseInt(event.target.value)) {
+          if (cart[i].quantity &lt; parseInt(event.target.value)) {
             totalPrice = totalPrice + unitPrice;
           } else {
             totalPrice = totalPrice - unitPrice;
@@ -273,7 +301,7 @@ function deleteProduct(cart) {
       let totalPrice = parseInt(displayTotalPrice.textContent);
       for (let i in cart) {
         if (
-          productToDeleteTag.dataset.id == cart[i].id &&
+          productToDeleteTag.dataset.id == cart[i].id &amp;&amp;
           productToDeleteTag.dataset.color == cart[i].colors
         ) {
           cartTag.removeChild(productToDeleteTag);
@@ -337,12 +365,12 @@ function getCustomerInformations() {
 function checkInformations() {
   if (
     document.getElementById("firstNameErrorMsg").getAttribute("value") ==
-      "true" &&
+      "true" &amp;&amp;
     document.getElementById("lastNameErrorMsg").getAttribute("value") ==
-      "true" &&
+      "true" &amp;&amp;
     document.getElementById("addressErrorMsg").getAttribute("value") ==
-      "true" &&
-    document.getElementById("cityErrorMsg").getAttribute("value") == "true" &&
+      "true" &amp;&amp;
+    document.getElementById("cityErrorMsg").getAttribute("value") == "true" &amp;&amp;
     document.getElementById("emailErrorMsg").getAttribute("value") == "true"
   ) {
     return true;
@@ -424,3 +452,26 @@ async function cartPage() {
 }
 
 cartPage();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addressRegex">addressRegex</a></li><li><a href="global.html#checkInformations">checkInformations</a></li><li><a href="global.html#createTag">createTag</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#displayCart">displayCart</a></li><li><a href="global.html#displayEmptyCart">displayEmptyCart</a></li><li><a href="global.html#displayProductById">displayProductById</a></li><li><a href="global.html#displayProducts">displayProducts</a></li><li><a href="global.html#emailRegex">emailRegex</a></li><li><a href="global.html#getAllProductsFromAPI">getAllProductsFromAPI</a></li><li><a href="global.html#getCustomerInformations">getCustomerInformations</a></li><li><a href="global.html#getIdFromUrl">getIdFromUrl</a></li><li><a href="global.html#getProductByIdFromAPI">getProductByIdFromAPI</a></li><li><a href="global.html#getProductFromAPI">getProductFromAPI</a></li><li><a href="global.html#getProductsIdFromCart">getProductsIdFromCart</a></li><li><a href="global.html#getTotalQuantityOfCart">getTotalQuantityOfCart</a></li><li><a href="global.html#goToCartPage">goToCartPage</a></li><li><a href="global.html#inputCheck">inputCheck</a></li><li><a href="global.html#newElement">newElement</a></li><li><a href="global.html#orderProductFromCart">orderProductFromCart</a></li><li><a href="global.html#productPage">productPage</a></li><li><a href="global.html#searchProductInCart">searchProductInCart</a></li><li><a href="global.html#searchProductInList">searchProductInList</a></li><li><a href="global.html#sendInformations">sendInformations</a></li><li><a href="global.html#setOptions">setOptions</a></li><li><a href="global.html#updateQuantity">updateQuantity</a></li><li><a href="global.html#updateStorage">updateStorage</a></li><li><a href="global.html#verifyQuantityAndColors">verifyQuantityAndColors</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Apr 11 2022 16:08:26 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
