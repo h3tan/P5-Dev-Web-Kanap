@@ -31,15 +31,16 @@ function getIdFromUrl() {
  * @returns {Promise<Object>}
  */
 async function getProductByIdFromAPI() {
-  id = getIdFromUrl();
-  let response = await fetch(`http://localhost:3000/api/products/${id}`);
-  if (!response.ok) {
+  try {
+    id = getIdFromUrl();
+    let response = await fetch(`http://localhost:3000/api/products/${id}`);
+    let resJson = await response.json();
+    return resJson;
+  } catch (err) {
     document.querySelector(".item").textContent = "Produit introuvable!";
-    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    let message = `Impossible de trouver l'API`;
     throw new Error(message);
   }
-  let resJson = await response.json();
-  return resJson;
 }
 
 /**

@@ -20,18 +20,21 @@ function newElement(element, attribut, attributName) {
 
 /**
  * Récupère la liste des produits de l'API
+ * @async
  * @returns {Promise<Object>}
  */
-async function getAllProductsFromAPI() {
-  let response = await fetch("http://localhost:3000/api/products/");
-  if (!response.ok) {
-    itemsTag.textContent = "Articles introuvables!";
-    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
-    throw new Error(message);
-  }
-  let resJson = await response.json();
-  return resJson;
-}
+ async function getAllProductsFromAPI() {
+   try {
+     let response = await fetch("http://localhost:3000/api/products/");
+     let resJson = await response.json();
+     return resJson;
+   } catch (err) {
+     let itemsTag = document.getElementById("items");
+     itemsTag.textContent = "Articles introuvables!";
+     let message = `Impossible de trouver l'API`;
+     throw new Error(message);
+   }
+ }
 
 /**
  * Crée les éléments HTML nécessaires en récupérant la liste des produits pour les afficher sur la page

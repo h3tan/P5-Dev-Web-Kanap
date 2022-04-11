@@ -78,15 +78,16 @@ function getProductsIdFromCart(cart) {
  * @returns {Promise<Object>}
  */
 async function getAllProductsFromAPI() {
-  let response = await fetch(`http://localhost:3000/api/products/`);
-  if (!response.ok) {
+  try {
+    let response = await fetch(`http://localhost:3000/api/products/`);
+    let resJson = await response.json();
+    return resJson;
+  } catch (err) {
     cartTag.textContent =
       "Impossible de communiquer avec la liste des produits";
-    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    let message = `Impossible de trouver l'API`;
     throw new Error(message);
   }
-  let resJson = await response.json();
-  return resJson;
 }
 
 /**
@@ -95,15 +96,16 @@ async function getAllProductsFromAPI() {
  * @returns {Promise<Object>}
  */
 async function getProductFromAPI(id) {
-  let response = await fetch(`http://localhost:3000/api/products/${id}`);
-  if (!response.ok) {
+  try {
+    let response = await fetch(`http://localhost:3000/api/products/${id}`);
+    let resJson = await response.json();
+    return resJson;
+  } catch (err) {
     cartTag.textContent =
       "Impossible de communiquer avec la liste des produits";
-    let message = `Erreur: ${response.status}, impossible de trouver l'API`;
+    let message = `Impossible de trouver l'API`;
     throw new Error(message);
   }
-  let resJson = await response.json();
-  return resJson;
 }
 
 /**
@@ -372,35 +374,39 @@ function checkInformations() {
  * @param {String} cart[].id
  */
 async function sendInformations(cart) {
-  let products = getProductsIdFromCart(cart);
-  console.log(products);
-  let orderInformationsJson = await fetch(
-    "http://localhost:3000/api/products/order",
-    {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contact: getCustomerInformations(),
-        products: products,
-      }),
-    }
-  );
-  if (!orderInformationsJson.ok) {
-    let message = `Erreur: ${orderInformationsJson.status}, impossible de trouver l'API`;
-    throw new Error(message);
-  }
-  let orderInformations = await orderInformationsJson.json();
-  alert(`Récapitulatif de votre commande:\n
+  try {
+    let products = getProductsIdFromCart(cart);
+    console.log(products);
+    let orderInformationsJson = await fetch(
+      "http://localhost:3000/api/products/order",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contact: getCustomerInformations(),
+          products: products,
+        }),
+      }
+    );
+    let orderInformations = await orderInformationsJson.json();
+    alert(`Récapitulatif de votre commande:\n
         Nom: ${orderInformations["contact"].lastName}\n
         Prénom: ${orderInformations["contact"].firstName}\n
         Addresse: ${orderInformations["contact"].address}\n
         Ville: ${orderInformations["contact"].city}\n
         Mail: ${orderInformations["contact"].email}\n
         Produits commandés: ${products}`);
-  document.location.href = `../html/confirmation.html?orderId=${orderInformations.orderId}`;
+    document.location.href = `../html/confirmation.html?orderId=${orderInformations.orderId}`;
+  } catch (err) {
+    let message = `Impossible de trouver l'API`;
+    alert(
+      "Une erreur s'est produite au moment de l'envoi de la commande, veuillez réessayez"
+    );
+    throw new Error(message);
+  }
 }
 
 /**
