@@ -376,7 +376,6 @@ function checkInformations() {
 async function sendInformations(cart) {
   try {
     let products = getProductsIdFromCart(cart);
-    console.log(products);
     let orderInformationsJson = await fetch(
       "http://localhost:3000/api/products/order",
       {
