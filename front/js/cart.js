@@ -43,7 +43,8 @@ function displayEmptyCart(tag) {
   afficheEmptyCart.style.textAlign = "center";
   afficheEmptyCart.textContent = "Panier Vide!";
   tag.appendChild(afficheEmptyCart);
-  return 0;
+  displayTotalPrice.textContent = 0;
+  displayTotalQuantity.textContent = 0;
 }
 
 /**
@@ -61,7 +62,24 @@ function getTotalQuantityOfCart(cart) {
 }
 
 /**
- * Retourne une liste d'ID des produits présents dans le panier
+ * Calcule le prix total dans le panier
+ * @async
+ * @param {Object[]} cart
+ * @param {String} cart[].id
+ * @param {Number} cart[].quantity
+ * @returns {Number}
+ */
+async function getTotalPriceOfCart(cart) {
+  let totalPrice = 0;
+  for (let i in cart) {
+    let product = await getProductFromAPI(cart[i].id);
+    totalPrice = totalPrice + cart[i].quantity * product.price;
+  }
+  return totalPrice;
+}
+
+/**
+ * Retourne une liste des ID des produits présents dans le panier
  * @param {Object[]} cart
  * @param {String} cart[].id
  * @returns {String[]}
@@ -106,7 +124,7 @@ async function displayCart(cart) {
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
-    let totalPrice = 0;
+    //let totalPrice = 0;
     for (let i in cart) {
       productFound = await getProductFromAPI(cart[i].id);
       // Création de l'élément: <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
@@ -188,7 +206,8 @@ async function displayCart(cart) {
       newArticle.appendChild(productContent);
       cartTag.appendChild(newArticle);
       // Affichage de la quantité totale et du prix total du panier au chargement de la page
-      totalPrice = totalPrice + cart[i].quantity * productFound.price;
+      //totalPrice = totalPrice + cart[i].quantity * productFound.price;
+      let totalPrice = await getTotalPriceOfCart(cart);
       displayTotalPrice.textContent = totalPrice;
       displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
     }
@@ -205,24 +224,16 @@ function updateQuantity(cart) {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
   inputsQuantity.forEach(async (inputTag) => {
     let productToModifyTag = inputTag.closest("article");
-    let product = await getProductFromAPI(productToModifyTag.dataset.id);
-    let unitPrice = product.price;
     // Gestion de l'évènement "input" lorsqu'on change la quantité
-    inputTag.addEventListener("input", (event) => {
-      let totalPrice = parseInt(displayTotalPrice.textContent);
+    inputTag.addEventListener("input", async (event) => {
       for (let i in cart) {
         if (
           productToModifyTag.dataset.id == cart[i].id &&
           productToModifyTag.dataset.color == cart[i].colors
         ) {
-          if (cart[i].quantity < parseInt(event.target.value)) {
-            totalPrice = totalPrice + unitPrice;
-          } else {
-            totalPrice = totalPrice - unitPrice;
-          }
           cart[i].quantity = parseInt(event.target.value);
+          displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
           displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
-          displayTotalPrice.textContent = totalPrice;
           localStorage.setItem("cart", JSON.stringify(cart));
         }
       }
@@ -241,29 +252,21 @@ function deleteProduct(cart) {
   // Parcours de tous les boutons de suppression
   deleteButtons.forEach(async (deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
-    let product = await getProductFromAPI(productToDeleteTag.dataset.id);
-    let unitPrice = product.price;
     // Gestion de l'évènement "click" au clic sur le bouton "Supprimer"
-    deleteTag.addEventListener("click", (event) => {
-      let totalPrice = parseInt(displayTotalPrice.textContent);
+    deleteTag.addEventListener("click", async (event) => {
       for (let i in cart) {
         if (
           productToDeleteTag.dataset.id == cart[i].id &&
           productToDeleteTag.dataset.color == cart[i].colors
         ) {
           cartTag.removeChild(productToDeleteTag);
-          if (cart.length == 1) {
-            cart.pop();
-            displayTotalPrice.textContent = 0;
-            displayTotalQuantity.textContent = 0;
+          cart.splice(i, 1);
+          displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
+          localStorage.setItem("cart", JSON.stringify(cart));
+          displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
+          if (cart.length == 0) {
             localStorage.removeItem("cart");
             displayEmptyCart(cartTag);
-          } else {
-            totalPrice = totalPrice - cart[i].quantity * unitPrice;
-            displayTotalPrice.textContent = totalPrice;
-            cart.splice(i, 1);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
           }
         }
       }
