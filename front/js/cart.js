@@ -85,10 +85,7 @@ async function getTotalPriceOfCart(cart) {
  * @returns {String[]}
  */
 function getProductsIdFromCart(cart) {
-  for (let i in cart) {
-    cart[i] = cart[i].id;
-  }
-  return cart;
+  return cart.map((cartElement) => cartElement.id);
 }
 
 /**
@@ -124,7 +121,6 @@ async function displayCart(cart) {
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
-    //let totalPrice = 0;
     for (let i in cart) {
       productFound = await getProductFromAPI(cart[i].id);
       // Création de l'élément: <article class="cart__item" data-id="id du produit" data-color="couleurs choisies"></article>
@@ -206,7 +202,6 @@ async function displayCart(cart) {
       newArticle.appendChild(productContent);
       cartTag.appendChild(newArticle);
       // Affichage de la quantité totale et du prix total du panier au chargement de la page
-      //totalPrice = totalPrice + cart[i].quantity * productFound.price;
       let totalPrice = await getTotalPriceOfCart(cart);
       displayTotalPrice.textContent = totalPrice;
       displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
@@ -222,7 +217,7 @@ async function displayCart(cart) {
  */
 function updateQuantity(cart) {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
-  inputsQuantity.forEach(async (inputTag) => {
+  inputsQuantity.forEach((inputTag) => {
     let productToModifyTag = inputTag.closest("article");
     // Gestion de l'évènement "input" lorsqu'on change la quantité
     inputTag.addEventListener("input", async (event) => {
@@ -250,7 +245,7 @@ function updateQuantity(cart) {
 function deleteProduct(cart) {
   let deleteButtons = document.querySelectorAll(".deleteItem");
   // Parcours de tous les boutons de suppression
-  deleteButtons.forEach(async (deleteTag) => {
+  deleteButtons.forEach((deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
     // Gestion de l'évènement "click" au clic sur le bouton "Supprimer"
     deleteTag.addEventListener("click", async (event) => {
