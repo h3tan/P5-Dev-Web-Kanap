@@ -1,3 +1,7 @@
+let maxQuantityOfCart = 300;
+let maxQuantityOfProduct = 100;
+let minQuantityOfProduct = 1;
+
 /**
  * Ajoute les balises <option> avec les valeurs passées en paramètres
  * @param {String} idTag
@@ -54,8 +58,8 @@ async function getProductByIdFromAPI() {
  */
 function verifyQuantityAndColors(id, quantity, colors) {
   if (
-    quantity > 0 &&
-    quantity <= 100 &&
+    quantity >= minQuantityOfProduct &&
+    quantity <= maxQuantityOfProduct &&
     Math.sign(quantity) != -1 &&
     colors != ""
   ) {
@@ -126,7 +130,6 @@ function updateStorage(id) {
     parseInt(quantityTag.value),
     colorsTag.value
   );
-  console.log(product);
   // Vérifie que l'utilisateur a choisi une couleur et une quantité
   if (product == false) {
     alert("Veuillez choisir une quantité et une couleur");
@@ -144,8 +147,14 @@ function updateStorage(id) {
   let productFound = searchProductInCart(product, cart);
   if (productFound != undefined) {
     productFound.quantity = productFound.quantity + product.quantity;
-    if (productFound.quantity > 100) {
+    if (productFound.quantity > maxQuantityOfProduct) {
       alert("Quantité maximale pour ce produit atteinte");
+      return;
+    }
+    if (getTotalQuantityOfCart(cart) > maxQuantityOfCart) {
+      alert(
+        "Quantité maximale du panier atteinte, impossible de mettre à jour la quantité"
+      );
       return;
     } else {
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -155,7 +164,7 @@ function updateStorage(id) {
   }
   // Ajoute le produit dans le panier s'il n'était pas déjà présent et que le panier est non vide
   cart.push(product);
-  if (getTotalQuantityOfCart(cart) > 300) {
+  if (getTotalQuantityOfCart(cart) > maxQuantityOfCart) {
     alert(
       "Quantité maximale du panier atteinte, impossible d'ajouter ce produit"
     );
