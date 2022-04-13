@@ -1,8 +1,8 @@
 /**
  * Créé une balise <element>, si des attributs sont présents, implémente ces attributs dans la balise
  * @param {String} element
- * @param {String[]} attribut
- * @param {String[]} attributName
+ * @param {String[]} [attribut]
+ * @param {String[]} [attributName]
  * Taille de attribut et attributName doivent être égales
  * @returns {HTMLElement}
  */
@@ -23,18 +23,18 @@ function newElement(element, attribut, attributName) {
  * @async
  * @returns {Promise<Object>}
  */
- async function getAllProductsFromAPI() {
-   try {
-     let response = await fetch("http://localhost:3000/api/products/");
-     let resJson = await response.json();
-     return resJson;
-   } catch (err) {
-     let itemsTag = document.getElementById("items");
-     itemsTag.textContent = "Articles introuvables!";
-     let message = `Impossible de trouver l'API`;
-     throw new Error(message);
-   }
- }
+async function getAllProductsFromAPI() {
+  try {
+    let response = await fetch("http://localhost:3000/api/products/");
+    let resJson = await response.json();
+    return resJson;
+  } catch (err) {
+    let itemsTag = document.getElementById("items");
+    itemsTag.textContent = "Articles introuvables!";
+    let message = `Impossible de trouver l'API`;
+    throw new Error(message);
+  }
+}
 
 /**
  * Crée les éléments HTML nécessaires en récupérant la liste des produits pour les afficher sur la page

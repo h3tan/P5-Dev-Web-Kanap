@@ -71,7 +71,8 @@ function displayEmptyCart(tag) {
   afficheEmptyCart.style.textAlign = "center";
   afficheEmptyCart.textContent = "Panier Vide!";
   tag.appendChild(afficheEmptyCart);
-  return 0;
+  displayTotalPrice.textContent = 0;
+  displayTotalQuantity.textContent = 0;
 }
 
 /**
@@ -89,33 +90,30 @@ function getTotalQuantityOfCart(cart) {
 }
 
 /**
- * Retourne une liste d'ID des produits présents dans le panier
+ * Calcule le prix total dans le panier
+ * @async
+ * @param {Object[]} cart
+ * @param {String} cart[].id
+ * @param {Number} cart[].quantity
+ * @returns {Number}
+ */
+async function getTotalPriceOfCart(cart) {
+  let totalPrice = 0;
+  for (let i in cart) {
+    let product = await getProductFromAPI(cart[i].id);
+    totalPrice = totalPrice + cart[i].quantity * product.price;
+  }
+  return totalPrice;
+}
+
+/**
+ * Retourne une liste des ID des produits présents dans le panier
  * @param {Object[]} cart
  * @param {String} cart[].id
  * @returns {String[]}
  */
 function getProductsIdFromCart(cart) {
-  for (let i in cart) {
-    cart[i] = cart[i].id;
-  }
-  return cart;
-}
-
-/**
- * Récupère la liste des produits
- * @returns {Promise&lt;Object>}
- */
-async function getAllProductsFromAPI() {
-  try {
-    let response = await fetch(`http://localhost:3000/api/products/`);
-    let resJson = await response.json();
-    return resJson;
-  } catch (err) {
-    cartTag.textContent =
-      "Impossible de communiquer avec la liste des produits";
-    let message = `Impossible de trouver l'API`;
-    throw new Error(message);
-  }
+  return cart.map((cartElement) => cartElement.id);
 }
 
 /**
@@ -137,22 +135,6 @@ async function getProductFromAPI(id) {
 }
 
 /**
- * Cherche l'élément index dans list
- * @param {String} index
- * @param {Object[]} list
- * @param {String} list[]._id
- * @returns {Object | Boolean}
- */
-function searchProductInList(index, list) {
-  for (let i in list) {
-    if (index == list[i]._id) {
-      return list[i];
-    }
-  }
-  return false;
-}
-
-/**
  * Construit les éléments nécessaires pour afficher le panier, liste de tous les produits en paramètre afin
  * de récupérer les informations manquantes aux produits du panier
  * @param {Object[]} cart
@@ -162,103 +144,95 @@ function searchProductInList(index, list) {
  * @param {Object[]} productList
  * @param {String} productList._id
  */
-async function displayCart(cart, productList) {
+async function displayCart(cart) {
   // Vérifie si le panier est vide, affiche que le panier est vide dans la page lorsque c'est le cas
   if (localStorage.length == 0) {
     displayEmptyCart(cartTag);
   } else {
-    let totalPrice = 0;
     for (let i in cart) {
-      // Cherche le produit du panier dans la liste de l'API pour retrouver les informations manquantes comme le prix
-      productFound = searchProductInList(cart[i].id, productList);
-      if (productFound != false) {
-        // Création de l'élément: &lt;article class="cart__item" data-id="id du produit" data-color="couleurs choisies">&lt;/article>
-        let newArticle = createTag(
-          "article",
-          ["class", "data-id", "data-color"],
-          ["cart__item", cart[i].id, cart[i].colors]
-        );
-        // Création de l'élément &lt;div class="cart__item__img">&lt;/div>
-        let imgContainer = createTag("div", ["class"], ["cart__item__img"]);
-        // Création de l'élément &lt;img src="chemin de l'image" alt="texte alternatif" />
-        let imgTag = createTag(
-          "img",
-          ["src", "alt"],
-          [productFound.imageUrl, productFound.altTxt]
-        );
-        // Création de l'élément &lt;div class="cart__item__content">&lt;/div>
-        let productContent = createTag(
-          "div",
-          ["class"],
-          ["cart__item__content"]
-        );
-        // Création de l'élément &lt;div class="cart__item__content__description">&lt;/div>
-        let descriptionTag = createTag(
-          "div",
-          ["class"],
-          ["cart__item__content__description"]
-        );
-        // Création de l'élément &lt;h2>Nom du produit&lt;/h2>
-        let productNameTag = createTag("h2");
-        productNameTag.textContent = productFound.name;
-        // Création de l'élément &lt;p>Couleurs choisies&lt;/p>
-        let productColorsTag = createTag("p");
-        productColorsTag.textContent = cart[i].colors;
-        // Création de l'élément &lt;p>Prix du produit&lt;/p>
-        let productPriceTag = createTag("p");
-        productPriceTag.textContent = productFound.price + " €";
-        //Association des éléments pour la description du produit
-        descriptionTag.appendChild(productNameTag);
-        descriptionTag.appendChild(productColorsTag);
-        descriptionTag.appendChild(productPriceTag);
-        productContent.appendChild(descriptionTag);
-        // Création de l'élément &lt;div class="cart__item__content__settings">&lt;/div>
-        let settingsTag = createTag(
-          "div",
-          ["class"],
-          ["cart__item__content__settings"]
-        );
-        // Création de l'élément &lt;div class="cart__item__content__settings__quantity">&lt;/div>
-        let settingsQuantity = createTag(
-          "div",
-          ["class"],
-          ["cart__item__content__settings__quantity"]
-        );
-        // Création de l'élément &lt;p>Qté: &lt;/p>
-        let quantityTag = createTag("p");
-        quantityTag.innerText = `Qté:`;
-        // Création de l'élément &lt;input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
-        let quantityInput = createTag(
-          "input",
-          ["type", "class", "name", "min", "max", "value"],
-          ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i].quantity]
-        );
-        // Création de l'élément &lt;div class="cart__item__content__settings__delete">
-        let deleteContainer = createTag(
-          "div",
-          ["class"],
-          ["cart__item__content__settings__delete"]
-        );
-        // Création de l'élément &lt;div class="deleteItem">&lt;/div>
-        let deleteButton = createTag("div", ["class"], ["deleteItem"]);
-        deleteButton.style.cursor = "pointer";
-        deleteButton.textContent = "Supprimer";
-        deleteContainer.appendChild(deleteButton);
-        // Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
-        settingsQuantity.appendChild(quantityTag);
-        settingsQuantity.appendChild(quantityInput);
-        settingsTag.appendChild(settingsQuantity);
-        settingsTag.appendChild(deleteContainer);
-        imgContainer.appendChild(imgTag);
-        productContent.appendChild(settingsTag);
-        newArticle.appendChild(imgContainer);
-        newArticle.appendChild(productContent);
-        cartTag.appendChild(newArticle);
-        // Affichage de la quantité totale et du prix total du panier au chargement de la page
-        totalPrice = totalPrice + cart[i].quantity * productFound.price;
-        displayTotalPrice.textContent = totalPrice;
-        displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
-      }
+      productFound = await getProductFromAPI(cart[i].id);
+      // Création de l'élément: &lt;article class="cart__item" data-id="id du produit" data-color="couleurs choisies">&lt;/article>
+      let newArticle = createTag(
+        "article",
+        ["class", "data-id", "data-color"],
+        ["cart__item", cart[i].id, cart[i].colors]
+      );
+      // Création de l'élément &lt;div class="cart__item__img">&lt;/div>
+      let imgContainer = createTag("div", ["class"], ["cart__item__img"]);
+      // Création de l'élément &lt;img src="chemin de l'image" alt="texte alternatif" />
+      let imgTag = createTag(
+        "img",
+        ["src", "alt"],
+        [productFound.imageUrl, productFound.altTxt]
+      );
+      // Création de l'élément &lt;div class="cart__item__content">&lt;/div>
+      let productContent = createTag("div", ["class"], ["cart__item__content"]);
+      // Création de l'élément &lt;div class="cart__item__content__description">&lt;/div>
+      let descriptionTag = createTag(
+        "div",
+        ["class"],
+        ["cart__item__content__description"]
+      );
+      // Création de l'élément &lt;h2>Nom du produit&lt;/h2>
+      let productNameTag = createTag("h2");
+      productNameTag.textContent = productFound.name;
+      // Création de l'élément &lt;p>Couleurs choisies&lt;/p>
+      let productColorsTag = createTag("p");
+      productColorsTag.textContent = cart[i].colors;
+      // Création de l'élément &lt;p>Prix du produit&lt;/p>
+      let productPriceTag = createTag("p");
+      productPriceTag.textContent = productFound.price + " €";
+      //Association des éléments pour la description du produit
+      descriptionTag.appendChild(productNameTag);
+      descriptionTag.appendChild(productColorsTag);
+      descriptionTag.appendChild(productPriceTag);
+      productContent.appendChild(descriptionTag);
+      // Création de l'élément &lt;div class="cart__item__content__settings">&lt;/div>
+      let settingsTag = createTag(
+        "div",
+        ["class"],
+        ["cart__item__content__settings"]
+      );
+      // Création de l'élément &lt;div class="cart__item__content__settings__quantity">&lt;/div>
+      let settingsQuantity = createTag(
+        "div",
+        ["class"],
+        ["cart__item__content__settings__quantity"]
+      );
+      // Création de l'élément &lt;p>Qté: &lt;/p>
+      let quantityTag = createTag("p");
+      quantityTag.innerText = `Qté:`;
+      // Création de l'élément &lt;input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
+      let quantityInput = createTag(
+        "input",
+        ["type", "class", "name", "min", "max", "value"],
+        ["number", "itemQuantity", "itemQuantity", 1, 100, cart[i].quantity]
+      );
+      // Création de l'élément &lt;div class="cart__item__content__settings__delete">
+      let deleteContainer = createTag(
+        "div",
+        ["class"],
+        ["cart__item__content__settings__delete"]
+      );
+      // Création de l'élément &lt;div class="deleteItem">&lt;/div>
+      let deleteButton = createTag("div", ["class"], ["deleteItem"]);
+      deleteButton.style.cursor = "pointer";
+      deleteButton.textContent = "Supprimer";
+      deleteContainer.appendChild(deleteButton);
+      // Association des éléments pour changer la quantité et supprimer un produit dans le conteneur
+      settingsQuantity.appendChild(quantityTag);
+      settingsQuantity.appendChild(quantityInput);
+      settingsTag.appendChild(settingsQuantity);
+      settingsTag.appendChild(deleteContainer);
+      imgContainer.appendChild(imgTag);
+      productContent.appendChild(settingsTag);
+      newArticle.appendChild(imgContainer);
+      newArticle.appendChild(productContent);
+      cartTag.appendChild(newArticle);
+      // Affichage de la quantité totale et du prix total du panier au chargement de la page
+      let totalPrice = await getTotalPriceOfCart(cart);
+      displayTotalPrice.textContent = totalPrice;
+      displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
     }
   }
 }
@@ -271,26 +245,18 @@ async function displayCart(cart, productList) {
  */
 function updateQuantity(cart) {
   let inputsQuantity = document.querySelectorAll(".itemQuantity");
-  inputsQuantity.forEach(async (inputTag) => {
+  inputsQuantity.forEach((inputTag) => {
     let productToModifyTag = inputTag.closest("article");
-    let product = await getProductFromAPI(productToModifyTag.dataset.id);
-    let unitPrice = product.price;
     // Gestion de l'évènement "input" lorsqu'on change la quantité
-    inputTag.addEventListener("input", (event) => {
-      let totalPrice = parseInt(displayTotalPrice.textContent);
+    inputTag.addEventListener("input", async (event) => {
       for (let i in cart) {
         if (
           productToModifyTag.dataset.id == cart[i].id &amp;&amp;
           productToModifyTag.dataset.color == cart[i].colors
         ) {
-          if (cart[i].quantity &lt; parseInt(event.target.value)) {
-            totalPrice = totalPrice + unitPrice;
-          } else {
-            totalPrice = totalPrice - unitPrice;
-          }
           cart[i].quantity = parseInt(event.target.value);
+          displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
           displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
-          displayTotalPrice.textContent = totalPrice;
           localStorage.setItem("cart", JSON.stringify(cart));
         }
       }
@@ -307,31 +273,23 @@ function updateQuantity(cart) {
 function deleteProduct(cart) {
   let deleteButtons = document.querySelectorAll(".deleteItem");
   // Parcours de tous les boutons de suppression
-  deleteButtons.forEach(async (deleteTag) => {
+  deleteButtons.forEach((deleteTag) => {
     let productToDeleteTag = deleteTag.closest("article");
-    let product = await getProductFromAPI(productToDeleteTag.dataset.id);
-    let unitPrice = product.price;
     // Gestion de l'évènement "click" au clic sur le bouton "Supprimer"
-    deleteTag.addEventListener("click", (event) => {
-      let totalPrice = parseInt(displayTotalPrice.textContent);
+    deleteTag.addEventListener("click", async (event) => {
       for (let i in cart) {
         if (
           productToDeleteTag.dataset.id == cart[i].id &amp;&amp;
           productToDeleteTag.dataset.color == cart[i].colors
         ) {
           cartTag.removeChild(productToDeleteTag);
-          if (cart.length == 1) {
-            cart.pop();
-            displayTotalPrice.textContent = 0;
-            displayTotalQuantity.textContent = 0;
+          cart.splice(i, 1);
+          displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
+          localStorage.setItem("cart", JSON.stringify(cart));
+          displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
+          if (cart.length == 0) {
             localStorage.removeItem("cart");
             displayEmptyCart(cartTag);
-          } else {
-            totalPrice = totalPrice - cart[i].quantity * unitPrice;
-            displayTotalPrice.textContent = totalPrice;
-            cart.splice(i, 1);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
           }
         }
       }
@@ -471,8 +429,7 @@ function orderProductFromCart(cart) {
  */
 async function cartPage() {
   let cart = JSON.parse(localStorage.getItem("cart"));
-  productsList = await getAllProductsFromAPI();
-  displayCart(cart, productsList);
+  await displayCart(cart);
   deleteProduct(cart);
   updateQuantity(cart);
   orderProductFromCart(cart);
@@ -489,13 +446,13 @@ cartPage();
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addressRegex">addressRegex</a></li><li><a href="global.html#cartPage">cartPage</a></li><li><a href="global.html#checkInformations">checkInformations</a></li><li><a href="global.html#createTag">createTag</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#displayCart">displayCart</a></li><li><a href="global.html#displayEmptyCart">displayEmptyCart</a></li><li><a href="global.html#displayProductById">displayProductById</a></li><li><a href="global.html#displayProducts">displayProducts</a></li><li><a href="global.html#emailRegex">emailRegex</a></li><li><a href="global.html#getAllProductsFromAPI">getAllProductsFromAPI</a></li><li><a href="global.html#getCustomerInformations">getCustomerInformations</a></li><li><a href="global.html#getIdFromUrl">getIdFromUrl</a></li><li><a href="global.html#getProductByIdFromAPI">getProductByIdFromAPI</a></li><li><a href="global.html#getProductFromAPI">getProductFromAPI</a></li><li><a href="global.html#getProductsIdFromCart">getProductsIdFromCart</a></li><li><a href="global.html#getTotalQuantityOfCart">getTotalQuantityOfCart</a></li><li><a href="global.html#goToCartPage">goToCartPage</a></li><li><a href="global.html#inputCheck">inputCheck</a></li><li><a href="global.html#newElement">newElement</a></li><li><a href="global.html#orderProductFromCart">orderProductFromCart</a></li><li><a href="global.html#productPage">productPage</a></li><li><a href="global.html#searchProductInCart">searchProductInCart</a></li><li><a href="global.html#searchProductInList">searchProductInList</a></li><li><a href="global.html#sendInformations">sendInformations</a></li><li><a href="global.html#setOptions">setOptions</a></li><li><a href="global.html#updateQuantity">updateQuantity</a></li><li><a href="global.html#updateStorage">updateStorage</a></li><li><a href="global.html#verifyQuantityAndColors">verifyQuantityAndColors</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addressRegex">addressRegex</a></li><li><a href="global.html#cartPage">cartPage</a></li><li><a href="global.html#checkInformations">checkInformations</a></li><li><a href="global.html#createTag">createTag</a></li><li><a href="global.html#deleteProduct">deleteProduct</a></li><li><a href="global.html#displayCart">displayCart</a></li><li><a href="global.html#displayEmptyCart">displayEmptyCart</a></li><li><a href="global.html#displayProductById">displayProductById</a></li><li><a href="global.html#displayProducts">displayProducts</a></li><li><a href="global.html#emailRegex">emailRegex</a></li><li><a href="global.html#getAllProductsFromAPI">getAllProductsFromAPI</a></li><li><a href="global.html#getCustomerInformations">getCustomerInformations</a></li><li><a href="global.html#getIdFromUrl">getIdFromUrl</a></li><li><a href="global.html#getProductByIdFromAPI">getProductByIdFromAPI</a></li><li><a href="global.html#getProductFromAPI">getProductFromAPI</a></li><li><a href="global.html#getProductsIdFromCart">getProductsIdFromCart</a></li><li><a href="global.html#getTotalPriceOfCart">getTotalPriceOfCart</a></li><li><a href="global.html#getTotalQuantityOfCart">getTotalQuantityOfCart</a></li><li><a href="global.html#goToCartPage">goToCartPage</a></li><li><a href="global.html#inputCheck">inputCheck</a></li><li><a href="global.html#newElement">newElement</a></li><li><a href="global.html#orderProductFromCart">orderProductFromCart</a></li><li><a href="global.html#productPage">productPage</a></li><li><a href="global.html#searchProductInCart">searchProductInCart</a></li><li><a href="global.html#sendInformations">sendInformations</a></li><li><a href="global.html#setOptions">setOptions</a></li><li><a href="global.html#updateQuantity">updateQuantity</a></li><li><a href="global.html#updateStorage">updateStorage</a></li><li><a href="global.html#verifyQuantityAndColors">verifyQuantityAndColors</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Mon Apr 11 2022 21:51:15 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Tue Apr 12 2022 16:29:37 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

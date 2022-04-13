@@ -113,8 +113,6 @@ async function getProductFromAPI(id) {
  * @param {String} cart[].id
  * @param {Number} cart[].quantity
  * @param {String} cart[].colors
- * @param {Object[]} productList
- * @param {String} productList._id
  */
 async function displayCart(cart) {
   // Vérifie si le panier est vide, affiche que le panier est vide dans la page lorsque c'est le cas
@@ -227,9 +225,11 @@ function updateQuantity(cart) {
           productToModifyTag.dataset.color == cart[i].colors
         ) {
           cart[i].quantity = parseInt(event.target.value);
-          displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
-          displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
-          localStorage.setItem("cart", JSON.stringify(cart));
+          if (cart[i].quantity > 0 && cart[i].quantity <= 100) {
+            displayTotalPrice.textContent = await getTotalPriceOfCart(cart);
+            displayTotalQuantity.textContent = getTotalQuantityOfCart(cart);
+            localStorage.setItem("cart", JSON.stringify(cart));
+          }
         }
       }
     });
@@ -328,7 +328,6 @@ function checkInformations() {
  * Envoie les informations (données du formulaire et liste des ID des produits dans le panier) vers l'API
  * La réponse de l'API permet de récupérer le numéro de commande pour la page de confirmation
  * @async
- * @param {Object[]}
  * @param {String} cart[].id
  */
 async function sendInformations(cart) {
@@ -371,7 +370,6 @@ async function sendInformations(cart) {
  * appelle la fonction sendInformations pour envoyer les informations vers l'API et
  * ainsi réaliser la commande du panier
  * @async
- * @param {Object[]}
  * @param {String} cart[].id
  */
 function orderProductFromCart(cart) {
@@ -385,6 +383,10 @@ function orderProductFromCart(cart) {
     event.preventDefault();
     if (localStorage.length == 0) {
       alert("Votre panier est vide!");
+      return;
+    }
+    if (getTotalQuantityOfCart(cart) > 300) {
+      alert("Nombre maximal de produits atteints");
       return;
     }
     if (checkInformations()) {
